@@ -13,6 +13,8 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import bf.openburkina.langtechmoore.service.mapper.UserMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.CacheManager;
@@ -41,16 +43,21 @@ public class UserService {
 
     private final CacheManager cacheManager;
 
+    private final UserMapper userMapper;
+
+    private  User userUpdate;
+
     public UserService(
         UserRepository userRepository,
         PasswordEncoder passwordEncoder,
         AuthorityRepository authorityRepository,
-        CacheManager cacheManager
-    ) {
+        CacheManager cacheManager,
+        UserMapper userMapper) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authorityRepository = authorityRepository;
         this.cacheManager = cacheManager;
+        this.userMapper = userMapper;
     }
 
     public Optional<User> activateRegistration(String key) {
@@ -93,7 +100,7 @@ public class UserService {
             });
     }
 
-    public User registerUser(AdminUserDTO userDTO, String password) {
+    public AdminUserDTO registerUser(AdminUserDTO userDTO, String password) {
         userRepository
             .findOneByLogin(userDTO.getLogin().toLowerCase())
             .ifPresent(existingUser -> {
@@ -123,16 +130,17 @@ public class UserService {
         newUser.setImageUrl(userDTO.getImageUrl());
         newUser.setLangKey(userDTO.getLangKey());
         // new user is not active
-        newUser.setActivated(false);
+       // newUser.setActivated(false);
+        newUser.setActivated(true);
         // new user gets registration key
         newUser.setActivationKey(RandomUtil.generateActivationKey());
         Set<Authority> authorities = new HashSet<>();
         authorityRepository.findById(AuthoritiesConstants.USER).ifPresent(authorities::add);
         newUser.setAuthorities(authorities);
-        userRepository.save(newUser);
+        newUser=userRepository.save(newUser);
         this.clearUserCaches(newUser);
         log.debug("Created Information for User: {}", newUser);
-        return newUser;
+        return userMapper.userToAdminUserDTO(newUser);
     }
 
     private boolean removeNonActivatedUser(User existingUser) {
@@ -237,8 +245,10 @@ public class UserService {
      * @param langKey   language key.
      * @param imageUrl  image URL of user.
      */
+
+/*
     public void updateUser(String firstName, String lastName, String email, String langKey, String imageUrl) {
-        SecurityUtils
+       SecurityUtils
             .getCurrentUserLogin()
             .flatMap(userRepository::findOneByLogin)
             .ifPresent(user -> {
@@ -252,6 +262,27 @@ public class UserService {
                 this.clearUserCaches(user);
                 log.debug("Changed Information for User: {}", user);
             });
+    }
+*/
+    public Optional<AdminUserDTO> updateUser(String firstName, String lastName, String email, String langKey, String imageUrl) {
+       return Optional.of(SecurityUtils
+           .getCurrentUserLogin()
+           .flatMap(userRepository::findOneByLogin))
+           .filter(Optional::isPresent)
+           .map(Optional::get)
+           .map(user -> {
+               user.setFirstName(firstName);
+               user.setLastName(lastName);
+               if (email != null) {
+                   user.setEmail(email.toLowerCase());
+               }
+               user.setLangKey(langKey);
+               user.setImageUrl(imageUrl);
+               this.clearUserCaches(user);
+               log.debug("Changed Information for User: {}", user);
+               return user;
+           })
+           .map(AdminUserDTO::new);
     }
 
     @Transactional
