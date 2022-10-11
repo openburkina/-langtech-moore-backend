@@ -1,1 +1,0 @@
-org.springframework.test.context.ContextCustomizerFactory = bf.openburkina.langtechmoore.config.TestContainersSpringContextCustomizerFactory
