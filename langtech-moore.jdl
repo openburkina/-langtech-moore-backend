@@ -1,0 +1,84 @@
+
+/**
+ * Profil entity.
+ * @author The LonkoTech team.
+ */
+entity Profil {
+	libelle String required,
+    description String
+}
+
+/**
+ * Utilisateur entity.
+ * @author The LonkoTech team.
+ */
+entity Utilisateur {
+    nom String required,
+    prenom String
+    telephone String,
+    email String,
+    login String required,
+    password String required,
+    typeUtilisateur TypeUtilisateur required,
+    pointFidelite Integer,
+}
+
+
+/**
+ * SourceDonnee entity.
+ * @author The LonkoTech team.
+ */
+entity SourceDonnee {
+	libelle String required,
+}
+
+/**
+ * Traduction entity.
+ * @author The LonkoTech team.
+ */
+entity Traduction {
+	libelle String required,
+    contenuTexte String,
+    contenuAudio Blob,
+    type TypeTraduction required,
+    note Integer, /** A enlever */
+    etat Etat
+}
+
+/**
+ * Categorie entity.
+ * @author The LonkoTech team.
+ */
+entity Categorie {
+	libelle String required,
+	description String
+}
+
+
+enum TypeUtilisateur {
+    UTILISATEUR, CONTRIBUTEUR, GESTIONNAIRE, ADMIN
+}
+
+enum TypeTraduction {
+    TEXTE, AUDIO
+}
+
+enum Etat {
+    EN_ATTENTE, VALIDER, REJETER
+}
+
+// defining multiple OneToMany relationships with comments
+relationship OneToMany {
+	/**
+	* A relationship
+	*/
+	Profil to Utilisateur{profil},
+    Categorie to SourceDonnee{categorie},
+    Utilisateur to SourceDonnee{utilisateur},
+    Utilisateur to Traduction{utilisateur},
+    SourceDonnee to Traduction{sourceDonnee}
+}
+
+service * with serviceClass
+dto * with mapstruct
+paginate * with pagination

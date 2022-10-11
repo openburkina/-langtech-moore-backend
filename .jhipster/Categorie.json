@@ -1,0 +1,33 @@
+{
+  "applications": "*",
+  "changelogDate": "20221011001226",
+  "dto": "mapstruct",
+  "embedded": false,
+  "entityTableName": "categorie",
+  "fields": [
+    {
+      "fieldName": "libelle",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "description",
+      "fieldType": "String"
+    }
+  ],
+  "fluentMethods": true,
+  "javadoc": "Categorie entity.\\n@author The LonkoTech team.",
+  "jpaMetamodelFiltering": false,
+  "name": "Categorie",
+  "pagination": "pagination",
+  "readOnly": false,
+  "relationships": [
+    {
+      "otherEntityName": "sourceDonnee",
+      "otherEntityRelationshipName": "categorie",
+      "relationshipName": "sourceDonnee",
+      "relationshipType": "one-to-many"
+    }
+  ],
+  "service": "serviceClass"
+}

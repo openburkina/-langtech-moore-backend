@@ -1,0 +1,41 @@
+{
+  "applications": "*",
+  "changelogDate": "20221011001224",
+  "dto": "mapstruct",
+  "embedded": false,
+  "entityTableName": "source_donnee",
+  "fields": [
+    {
+      "fieldName": "libelle",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    }
+  ],
+  "fluentMethods": true,
+  "javadoc": "SourceDonnee entity.\\n@author The LonkoTech team.",
+  "jpaMetamodelFiltering": false,
+  "name": "SourceDonnee",
+  "pagination": "pagination",
+  "readOnly": false,
+  "relationships": [
+    {
+      "otherEntityName": "traduction",
+      "otherEntityRelationshipName": "sourceDonnee",
+      "relationshipName": "traduction",
+      "relationshipType": "one-to-many"
+    },
+    {
+      "otherEntityName": "categorie",
+      "otherEntityRelationshipName": "sourceDonnee",
+      "relationshipName": "categorie",
+      "relationshipType": "many-to-one"
+    },
+    {
+      "otherEntityName": "utilisateur",
+      "otherEntityRelationshipName": "sourceDonnee",
+      "relationshipName": "utilisateur",
+      "relationshipType": "many-to-one"
+    }
+  ],
+  "service": "serviceClass"
+}
