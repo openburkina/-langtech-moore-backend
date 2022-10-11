@@ -11,14 +11,15 @@ import org.mapstruct.*;
 /**
  * Mapper for the entity {@link SourceDonnee} and its DTO {@link SourceDonneeDTO}.
  */
+
 @Mapper(componentModel = "spring", uses = {CategorieMapper.class, UtilisateurMapper.class})
 public interface SourceDonneeMapper extends EntityMapper<SourceDonneeDTO, SourceDonnee> {
     @Mapping(target = "categorie", source = "categorie", qualifiedByName = "categorieId")
     @Mapping(target = "utilisateur", source = "utilisateur", qualifiedByName = "utilisateurId")
     SourceDonneeDTO toDto(SourceDonnee s);
 
-    @Mapping(source = "categorieId", target = "categorie")
-    @Mapping(source = "utilisateurId", target = "utilisateur")
+    @Mapping(source = "categorieId", target = "categorie.id")
+    @Mapping(source = "utilisateurId", target = "utilisateur.id")
     SourceDonnee toEntity(SourceDonneeDTO s);
 
     @Named("categorieId")
