@@ -1,0 +1,73 @@
+{
+  "applications": "*",
+  "changelogDate": "20221011001223",
+  "dto": "mapstruct",
+  "embedded": false,
+  "entityTableName": "utilisateur",
+  "fields": [
+    {
+      "fieldName": "nom",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "prenom",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "telephone",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "email",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "login",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "password",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "typeUtilisateur",
+      "fieldType": "TypeUtilisateur",
+      "fieldValidateRules": ["required"],
+      "fieldValues": "UTILISATEUR,CONTRIBUTEUR,GESTIONNAIRE,ADMIN"
+    },
+    {
+      "fieldName": "pointFidelite",
+      "fieldType": "Integer"
+    }
+  ],
+  "fluentMethods": true,
+  "javadoc": "Utilisateur entity.\\n@author The LonkoTech team.",
+  "jpaMetamodelFiltering": false,
+  "name": "Utilisateur",
+  "pagination": "pagination",
+  "readOnly": false,
+  "relationships": [
+    {
+      "otherEntityName": "sourceDonnee",
+      "otherEntityRelationshipName": "utilisateur",
+      "relationshipName": "sourceDonnee",
+      "relationshipType": "one-to-many"
+    },
+    {
+      "otherEntityName": "traduction",
+      "otherEntityRelationshipName": "utilisateur",
+      "relationshipName": "traduction",
+      "relationshipType": "one-to-many"
+    },
+    {
+      "otherEntityName": "profil",
+      "otherEntityRelationshipName": "utilisateur",
+      "relationshipName": "profil",
+      "relationshipType": "many-to-one"
+    }
+  ],
+  "service": "serviceClass"
+}

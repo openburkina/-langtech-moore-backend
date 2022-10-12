@@ -1,0 +1,60 @@
+{
+  "applications": "*",
+  "changelogDate": "20221011001225",
+  "dto": "mapstruct",
+  "embedded": false,
+  "entityTableName": "traduction",
+  "fields": [
+    {
+      "fieldName": "libelle",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "contenuTexte",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "contenuAudio",
+      "fieldType": "byte[]",
+      "fieldTypeBlobContent": "any"
+    },
+    {
+      "fieldName": "type",
+      "fieldType": "TypeTraduction",
+      "fieldValidateRules": ["required"],
+      "fieldValues": "TEXTE,AUDIO"
+    },
+    {
+      "fieldName": "note",
+      "fieldType": "Integer"
+    },
+    {
+      "fieldName": "etat",
+      "fieldType": "Etat",
+      "fieldValues": "EN_ATTENTE,VALIDER,REJETER",
+      "javadoc": "A enlever"
+    }
+  ],
+  "fluentMethods": true,
+  "javadoc": "Traduction entity.\\n@author The LonkoTech team.",
+  "jpaMetamodelFiltering": false,
+  "name": "Traduction",
+  "pagination": "pagination",
+  "readOnly": false,
+  "relationships": [
+    {
+      "otherEntityName": "utilisateur",
+      "otherEntityRelationshipName": "traduction",
+      "relationshipName": "utilisateur",
+      "relationshipType": "many-to-one"
+    },
+    {
+      "otherEntityName": "sourceDonnee",
+      "otherEntityRelationshipName": "traduction",
+      "relationshipName": "sourceDonnee",
+      "relationshipType": "many-to-one"
+    }
+  ],
+  "service": "serviceClass"
+}
