@@ -7,6 +7,8 @@ import bf.openburkina.langtechmoore.service.MailService;
 import bf.openburkina.langtechmoore.service.UserService;
 import bf.openburkina.langtechmoore.service.dto.AdminUserDTO;
 import bf.openburkina.langtechmoore.service.dto.PasswordChangeDTO;
+import bf.openburkina.langtechmoore.service.dto.UserDTO;
+import bf.openburkina.langtechmoore.service.dto.UtilisateurDTO;
 import bf.openburkina.langtechmoore.web.rest.errors.*;
 import bf.openburkina.langtechmoore.web.rest.vm.KeyAndPasswordVM;
 import bf.openburkina.langtechmoore.web.rest.vm.ManagedUserVM;
@@ -57,7 +59,7 @@ public class AccountResource {
      */
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
-    public AdminUserDTO registerAccount(@Valid @RequestBody ManagedUserVM managedUserVM) {
+    public UserDTO registerAccount(@Valid @RequestBody UtilisateurDTO managedUserVM) {
         if (isPasswordLengthInvalid(managedUserVM.getPassword())) {
             throw new InvalidPasswordException();
         }
@@ -113,7 +115,7 @@ public class AccountResource {
      * @throws RuntimeException {@code 500 (Internal Server Error)} if the user login wasn't found.
      */
     @PostMapping("/account")
-    public Optional<AdminUserDTO> saveAccount(@Valid @RequestBody AdminUserDTO userDTO) {
+    public Optional<UserDTO> saveAccount(@Valid @RequestBody UtilisateurDTO userDTO) {
         String userLogin = SecurityUtils
             .getCurrentUserLogin()
             .orElseThrow(() -> new AccountResourceException("Current user login not found"));
@@ -125,13 +127,7 @@ public class AccountResource {
         if (!user.isPresent()) {
             throw new AccountResourceException("User could not be found");
         }
-       return userService.updateUser(
-            userDTO.getFirstName(),
-            userDTO.getLastName(),
-            userDTO.getEmail(),
-            userDTO.getLangKey(),
-            userDTO.getImageUrl()
-        );
+       return userService.updateProfitUser(userDTO);
     }
 
     /**

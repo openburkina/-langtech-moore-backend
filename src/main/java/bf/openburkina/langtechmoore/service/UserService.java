@@ -3,8 +3,10 @@ package bf.openburkina.langtechmoore.service;
 import bf.openburkina.langtechmoore.config.Constants;
 import bf.openburkina.langtechmoore.domain.Authority;
 import bf.openburkina.langtechmoore.domain.User;
+import bf.openburkina.langtechmoore.domain.Utilisateur;
 import bf.openburkina.langtechmoore.repository.AuthorityRepository;
 import bf.openburkina.langtechmoore.repository.UserRepository;
+import bf.openburkina.langtechmoore.repository.UtilisateurRepository;
 import bf.openburkina.langtechmoore.security.AuthoritiesConstants;
 import bf.openburkina.langtechmoore.security.SecurityUtils;
 import bf.openburkina.langtechmoore.service.dto.AdminUserDTO;
@@ -14,7 +16,9 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import bf.openburkina.langtechmoore.service.dto.UtilisateurDTO;
 import bf.openburkina.langtechmoore.service.mapper.UserMapper;
+import bf.openburkina.langtechmoore.service.mapper.UtilisateurMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.CacheManager;
@@ -37,6 +41,8 @@ public class UserService {
 
     private final UserRepository userRepository;
 
+    private final UtilisateurRepository utilisateurRepository;
+
     private final PasswordEncoder passwordEncoder;
 
     private final AuthorityRepository authorityRepository;
@@ -45,19 +51,22 @@ public class UserService {
 
     private final UserMapper userMapper;
 
-    private  User userUpdate;
+    private final UtilisateurMapper utilisateurMapper;
 
     public UserService(
         UserRepository userRepository,
-        PasswordEncoder passwordEncoder,
+        UtilisateurRepository utilisateurRepository, PasswordEncoder passwordEncoder,
         AuthorityRepository authorityRepository,
         CacheManager cacheManager,
-        UserMapper userMapper) {
+        UserMapper userMapper,
+        UtilisateurMapper utilisateurMapper) {
         this.userRepository = userRepository;
+        this.utilisateurRepository = utilisateurRepository;
         this.passwordEncoder = passwordEncoder;
         this.authorityRepository = authorityRepository;
         this.cacheManager = cacheManager;
         this.userMapper = userMapper;
+        this.utilisateurMapper = utilisateurMapper;
     }
 
     public Optional<User> activateRegistration(String key) {
@@ -100,7 +109,7 @@ public class UserService {
             });
     }
 
-    public AdminUserDTO registerUser(AdminUserDTO userDTO, String password) {
+    public UserDTO registerUser(UtilisateurDTO userDTO, String password) {
         userRepository
             .findOneByLogin(userDTO.getLogin().toLowerCase())
             .ifPresent(existingUser -> {
@@ -118,17 +127,18 @@ public class UserService {
                 }
             });
         User newUser = new User();
+        Utilisateur utilisateur = utilisateurMapper.toEntity(userDTO);
         String encryptedPassword = passwordEncoder.encode(password);
         newUser.setLogin(userDTO.getLogin().toLowerCase());
         // new user gets initially a generated password
         newUser.setPassword(encryptedPassword);
-        newUser.setFirstName(userDTO.getFirstName());
-        newUser.setLastName(userDTO.getLastName());
+        newUser.setFirstName(userDTO.getNom());
+        newUser.setLastName(userDTO.getPrenom());
         if (userDTO.getEmail() != null) {
             newUser.setEmail(userDTO.getEmail().toLowerCase());
         }
-        newUser.setImageUrl(userDTO.getImageUrl());
-        newUser.setLangKey(userDTO.getLangKey());
+
+        newUser.setLangKey(Constants.DEFAULT_LANGUAGE); // default language
         // new user is not active
        // newUser.setActivated(false);
         newUser.setActivated(true);
@@ -138,9 +148,11 @@ public class UserService {
         authorityRepository.findById(AuthoritiesConstants.USER).ifPresent(authorities::add);
         newUser.setAuthorities(authorities);
         newUser=userRepository.save(newUser);
+        utilisateur.setUser(newUser);
+        utilisateurRepository.save(utilisateur);
         this.clearUserCaches(newUser);
         log.debug("Created Information for User: {}", newUser);
-        return userMapper.userToAdminUserDTO(newUser);
+        return userMapper.userToUserDTO(newUser);
     }
 
     private boolean removeNonActivatedUser(User existingUser) {
@@ -239,11 +251,6 @@ public class UserService {
     /**
      * Update basic information (first name, last name, email, language) for the current user.
      *
-     * @param firstName first name of user.
-     * @param lastName  last name of user.
-     * @param email     email id of user.
-     * @param langKey   language key.
-     * @param imageUrl  image URL of user.
      */
 
 /*
@@ -264,25 +271,26 @@ public class UserService {
             });
     }
 */
-    public Optional<AdminUserDTO> updateUser(String firstName, String lastName, String email, String langKey, String imageUrl) {
+    public Optional<UserDTO> updateProfitUser(UtilisateurDTO userDto) {
        return Optional.of(SecurityUtils
            .getCurrentUserLogin()
            .flatMap(userRepository::findOneByLogin))
            .filter(Optional::isPresent)
            .map(Optional::get)
            .map(user -> {
-               user.setFirstName(firstName);
-               user.setLastName(lastName);
-               if (email != null) {
-                   user.setEmail(email.toLowerCase());
+               user.setFirstName(userDto.getNom());
+               user.setLastName(userDto.getPrenom());
+               if (userDto.getEmail() != null) {
+                   user.setEmail(userDto.getEmail().toLowerCase());
                }
-               user.setLangKey(langKey);
-               user.setImageUrl(imageUrl);
+               Utilisateur utilisateur = utilisateurMapper.toEntity(userDto);
+               utilisateur.setUser(user);
+               utilisateurRepository.save(utilisateur);
                this.clearUserCaches(user);
                log.debug("Changed Information for User: {}", user);
                return user;
            })
-           .map(AdminUserDTO::new);
+           .map(UserDTO::new);
     }
 
     @Transactional

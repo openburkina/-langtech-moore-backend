@@ -14,7 +14,6 @@ public class UtilisateurDTO implements Serializable {
 
     private Long id;
 
-    @NotNull
     private String nom;
 
     private String prenom;
@@ -23,10 +22,8 @@ public class UtilisateurDTO implements Serializable {
 
     private String email;
 
-    @NotNull
     private String login;
 
-    @NotNull
     private String password;
 
     @NotNull
