@@ -1,7 +1,11 @@
 package bf.openburkina.langtechmoore.web.rest;
 
+import bf.openburkina.langtechmoore.domain.Utilisateur;
+import bf.openburkina.langtechmoore.repository.UtilisateurRepository;
 import bf.openburkina.langtechmoore.security.jwt.JWTFilter;
 import bf.openburkina.langtechmoore.security.jwt.TokenProvider;
+import bf.openburkina.langtechmoore.service.UserService;
+import bf.openburkina.langtechmoore.service.dto.UserDTO;
 import bf.openburkina.langtechmoore.web.rest.vm.LoginVM;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import javax.validation.Valid;
@@ -14,6 +18,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 /**
  * Controller to authenticate users.
  */
@@ -25,9 +31,15 @@ public class UserJWTController {
 
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
-    public UserJWTController(TokenProvider tokenProvider, AuthenticationManagerBuilder authenticationManagerBuilder) {
+    private final UserService userService;
+
+    private final UtilisateurRepository utilisateurRepository;
+
+    public UserJWTController(TokenProvider tokenProvider, AuthenticationManagerBuilder authenticationManagerBuilder, UserService userService, UtilisateurRepository utilisateurRepository) {
         this.tokenProvider = tokenProvider;
         this.authenticationManagerBuilder = authenticationManagerBuilder;
+        this.userService = userService;
+        this.utilisateurRepository = utilisateurRepository;
     }
 
     @PostMapping("/authenticate")
@@ -42,7 +54,12 @@ public class UserJWTController {
         String jwt = tokenProvider.createToken(authentication, loginVM.isRememberMe());
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add(JWTFilter.AUTHORIZATION_HEADER, "Bearer " + jwt);
-        return new ResponseEntity<>(new JWTToken(jwt), httpHeaders, HttpStatus.OK);
+        UserDTO adminUserDTO = userService
+            .getUserWithAuthoritiesByLogin(loginVM.getUsername())
+            .map(UserDTO::new)
+            .orElseThrow(() -> new AccountResourceException("User could not be found"));
+        Optional<Utilisateur> utilisateur = utilisateurRepository.findByUserId(adminUserDTO.getId());
+        return new ResponseEntity<>(new JWTToken(jwt,utilisateur.get()), httpHeaders, HttpStatus.OK);
     }
 
     /**
@@ -52,8 +69,11 @@ public class UserJWTController {
 
         private String idToken;
 
-        JWTToken(String idToken) {
+        private Utilisateur utilisateur;
+
+        JWTToken(String idToken,Utilisateur utilisateur) {
             this.idToken = idToken;
+            this.utilisateur = utilisateur;
         }
 
         @JsonProperty("id_token")
@@ -63,6 +83,21 @@ public class UserJWTController {
 
         void setIdToken(String idToken) {
             this.idToken = idToken;
+        }
+
+        public Utilisateur getUtilisateur() {
+            return utilisateur;
+        }
+
+        public void setUtilisateur(Utilisateur utilisateur) {
+            this.utilisateur = utilisateur;
+        }
+    }
+
+    private static class AccountResourceException extends RuntimeException {
+
+        private AccountResourceException(String message) {
+            super(message);
         }
     }
 }
