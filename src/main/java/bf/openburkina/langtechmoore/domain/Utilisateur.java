@@ -23,8 +23,7 @@ public class Utilisateur implements Serializable {
     @Column(name = "id")
     private Long id;
 
-    @NotNull
-    @Column(name = "nom", nullable = false)
+    @Column(name = "nom", nullable = true)
     private String nom;
 
     @Column(name = "prenom")
@@ -35,14 +34,6 @@ public class Utilisateur implements Serializable {
 
     @Column(name = "email")
     private String email;
-
-    @NotNull
-    @Column(name = "login", nullable = false)
-    private String login;
-
-    @NotNull
-    @Column(name = "password", nullable = false)
-    private String password;
 
     @NotNull
     @Enumerated(EnumType.STRING)
@@ -63,6 +54,11 @@ public class Utilisateur implements Serializable {
     @ManyToOne
     @JsonIgnoreProperties(value = { "utilisateurs" }, allowSetters = true)
     private Profil profil;
+
+    @OneToOne
+    @JsonIgnoreProperties(value = { "authorities" }, allowSetters = true)
+    @JoinColumn(unique = true)
+    private User user;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -129,32 +125,6 @@ public class Utilisateur implements Serializable {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public String getLogin() {
-        return this.login;
-    }
-
-    public Utilisateur login(String login) {
-        this.setLogin(login);
-        return this;
-    }
-
-    public void setLogin(String login) {
-        this.login = login;
-    }
-
-    public String getPassword() {
-        return this.password;
-    }
-
-    public Utilisateur password(String password) {
-        this.setPassword(password);
-        return this;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public TypeUtilisateur getTypeUtilisateur() {
@@ -258,6 +228,14 @@ public class Utilisateur implements Serializable {
         return this;
     }
 
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
 
     @Override
@@ -286,8 +264,6 @@ public class Utilisateur implements Serializable {
             ", prenom='" + getPrenom() + "'" +
             ", telephone='" + getTelephone() + "'" +
             ", email='" + getEmail() + "'" +
-            ", login='" + getLogin() + "'" +
-            ", password='" + getPassword() + "'" +
             ", typeUtilisateur='" + getTypeUtilisateur() + "'" +
             ", pointFidelite=" + getPointFidelite() +
             "}";
