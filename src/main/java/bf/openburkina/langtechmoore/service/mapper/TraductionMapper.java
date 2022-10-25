@@ -1,8 +1,10 @@
 package bf.openburkina.langtechmoore.service.mapper;
 
+import bf.openburkina.langtechmoore.domain.Langue;
 import bf.openburkina.langtechmoore.domain.SourceDonnee;
 import bf.openburkina.langtechmoore.domain.Traduction;
 import bf.openburkina.langtechmoore.domain.Utilisateur;
+import bf.openburkina.langtechmoore.service.dto.LangueDTO;
 import bf.openburkina.langtechmoore.service.dto.SourceDonneeDTO;
 import bf.openburkina.langtechmoore.service.dto.TraductionDTO;
 import bf.openburkina.langtechmoore.service.dto.UtilisateurDTO;
@@ -15,6 +17,7 @@ import org.mapstruct.*;
 public interface TraductionMapper extends EntityMapper<TraductionDTO, Traduction> {
     @Mapping(target = "utilisateur", source = "utilisateur", qualifiedByName = "utilisateurId")
     @Mapping(target = "sourceDonnee", source = "sourceDonnee", qualifiedByName = "sourceDonneeId")
+    @Mapping(target = "langue", source = "langue", qualifiedByName = "langueId")
     TraductionDTO toDto(Traduction s);
 
     @Named("utilisateurId")
@@ -26,4 +29,9 @@ public interface TraductionMapper extends EntityMapper<TraductionDTO, Traduction
     @BeanMapping(ignoreByDefault = true)
     @Mapping(target = "id", source = "id")
     SourceDonneeDTO toDtoSourceDonneeId(SourceDonnee sourceDonnee);
+
+    @Named("langueId")
+    @BeanMapping(ignoreByDefault = true)
+    @Mapping(target = "id", source = "id")
+    LangueDTO toDtoLangueId(Langue langue);
 }
