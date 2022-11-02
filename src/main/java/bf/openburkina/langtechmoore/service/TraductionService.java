@@ -88,6 +88,20 @@ public class TraductionService {
         return traductionRepository.findAll(pageable).map(traductionMapper::toDto);
     }
 
+    @Transactional(readOnly = true)
+    public Page<TraductionDTO> findAllByCriteria(TraductionDTO traductionDTO,Pageable pageable) {
+        log.debug("Request to get all Traductions");
+        return traductionRepository.findAllWithCriteria(
+            traductionDTO.getLibelle(),
+            traductionDTO.getEtat(),
+            traductionDTO.getType(),
+            traductionDTO.getContenuAudioContentType(),
+            traductionDTO.getSourceDonnee()!=null?traductionDTO.getSourceDonnee().getId():null,
+            traductionDTO.getUtilisateur()!=null?traductionDTO.getUtilisateur().getId():null,
+            traductionDTO.getLangue()!=null?traductionDTO.getLangue().getId():null
+            ,pageable).map(traductionMapper::toDto);
+    }
+
     /**
      * Get one traduction by id.
      *

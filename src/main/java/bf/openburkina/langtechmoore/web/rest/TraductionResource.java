@@ -147,7 +147,15 @@ public class TraductionResource {
     @GetMapping("/traductions")
     public ResponseEntity<List<TraductionDTO>> getAllTraductions(@org.springdoc.api.annotations.ParameterObject Pageable pageable) {
         log.debug("REST request to get a page of Traductions");
-        Page<TraductionDTO> page = traductionService.findAll(pageable);
+         Page<TraductionDTO> page = traductionService.findAll(pageable);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
+    }
+
+    @PostMapping("/traductions/criteria")
+    public ResponseEntity<List<TraductionDTO>> getAllTraductionsByCriteria(@RequestBody TraductionDTO traductionDTO,@org.springdoc.api.annotations.ParameterObject Pageable pageable) {
+        log.debug("REST request to get a page of Traductions");
+        Page<TraductionDTO> page = traductionService.findAllByCriteria(traductionDTO,pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
