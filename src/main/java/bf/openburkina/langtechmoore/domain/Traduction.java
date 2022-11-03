@@ -44,6 +44,9 @@ public class Traduction implements Serializable {
     @Column(name = "note")
     private Integer note;
 
+    @Column(name = "chemin_document")
+    private String cheminDocument;
+
     /**
      * A enlever
      */
@@ -141,6 +144,14 @@ public class Traduction implements Serializable {
 
     public Integer getNote() {
         return this.note;
+    }
+
+    public String getCheminDocument() {
+        return cheminDocument;
+    }
+
+    public void setCheminDocument(String cheminDocument) {
+        this.cheminDocument = cheminDocument;
     }
 
     public Traduction note(Integer note) {
