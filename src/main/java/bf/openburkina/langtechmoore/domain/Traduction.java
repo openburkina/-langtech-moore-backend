@@ -62,6 +62,10 @@ public class Traduction implements Serializable {
     @JsonIgnoreProperties(value = { "traductions", "categorie", "utilisateur" }, allowSetters = true)
     private SourceDonnee sourceDonnee;
 
+    @ManyToOne
+    @JsonIgnoreProperties(value = { "traductions", "categorie", "utilisateur" }, allowSetters = true)
+    private Langue langue;
+
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
     public Long getId() {
@@ -200,6 +204,14 @@ public class Traduction implements Serializable {
     public Traduction sourceDonnee(SourceDonnee sourceDonnee) {
         this.setSourceDonnee(sourceDonnee);
         return this;
+    }
+
+    public Langue getLangue() {
+        return langue;
+    }
+
+    public void setLangue(Langue langue) {
+        this.langue = langue;
     }
 
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here

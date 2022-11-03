@@ -156,7 +156,15 @@ public class TraductionResource {
     @GetMapping("/traductions")
     public ResponseEntity<List<TraductionDTO>> getAllTraductions(@org.springdoc.api.annotations.ParameterObject Pageable pageable) {
         log.debug("REST request to get a page of Traductions");
-        Page<TraductionDTO> page = traductionService.findAll(pageable);
+         Page<TraductionDTO> page = traductionService.findAll(pageable);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
+    }
+
+    @PostMapping("/traductions/criteria")
+    public ResponseEntity<List<TraductionDTO>> getAllTraductionsByCriteria(@RequestBody TraductionDTO traductionDTO,@org.springdoc.api.annotations.ParameterObject Pageable pageable) {
+        log.debug("REST request to get a page of Traductions");
+        Page<TraductionDTO> page = traductionService.findAllByCriteria(traductionDTO,pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
@@ -195,7 +203,7 @@ public class TraductionResource {
          return  traductionService.saveMultimedia(file);
     }*/
 
-    // TODO: 03/11/2022 Resource d'appel pour la création de traduction avec depot ficchier sur le repertoire
+    // TODO: 03/11/2022 Resource d'appel pour la création de traduction avec depot ficchier sur le repertoire ajout du nouveau champ de stockage du lien du fichier
     @PostMapping("/upload/traduction/fichier")
     public ResponseEntity<Void> singleFileUpload(@RequestBody TraductionDTO traductionDTO) throws  Exception {
         return  traductionService.saveMultimedia(traductionDTO);
