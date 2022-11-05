@@ -31,6 +31,8 @@ public class TraductionDTO implements Serializable {
 
     private Integer note;
 
+    private String cheminDocument;
+
     /**
      * A enlever
      */
@@ -40,6 +42,16 @@ public class TraductionDTO implements Serializable {
     private UtilisateurDTO utilisateur;
 
     private SourceDonneeDTO sourceDonnee;
+
+    private LangueDTO langue;
+
+    public LangueDTO getLangue() {
+        return langue;
+    }
+
+    public void setLangue(LangueDTO langue) {
+        this.langue = langue;
+    }
 
     public Long getId() {
         return id;
@@ -95,6 +107,14 @@ public class TraductionDTO implements Serializable {
 
     public void setNote(Integer note) {
         this.note = note;
+    }
+
+    public String getCheminDocument() {
+        return cheminDocument;
+    }
+
+    public void setCheminDocument(String cheminDocument) {
+        this.cheminDocument = cheminDocument;
     }
 
     public Etat getEtat() {

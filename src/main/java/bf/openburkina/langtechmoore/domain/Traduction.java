@@ -44,6 +44,9 @@ public class Traduction implements Serializable {
     @Column(name = "note")
     private Integer note;
 
+    @Column(name = "chemin_document")
+    private String cheminDocument;
+
     /**
      * A enlever
      */
@@ -58,6 +61,10 @@ public class Traduction implements Serializable {
     @ManyToOne
     @JsonIgnoreProperties(value = { "traductions", "categorie", "utilisateur" }, allowSetters = true)
     private SourceDonnee sourceDonnee;
+
+    @ManyToOne
+    @JsonIgnoreProperties(value = { "traductions", "categorie", "utilisateur" }, allowSetters = true)
+    private Langue langue;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -143,6 +150,14 @@ public class Traduction implements Serializable {
         return this.note;
     }
 
+    public String getCheminDocument() {
+        return cheminDocument;
+    }
+
+    public void setCheminDocument(String cheminDocument) {
+        this.cheminDocument = cheminDocument;
+    }
+
     public Traduction note(Integer note) {
         this.setNote(note);
         return this;
@@ -189,6 +204,14 @@ public class Traduction implements Serializable {
     public Traduction sourceDonnee(SourceDonnee sourceDonnee) {
         this.setSourceDonnee(sourceDonnee);
         return this;
+    }
+
+    public Langue getLangue() {
+        return langue;
+    }
+
+    public void setLangue(Langue langue) {
+        this.langue = langue;
     }
 
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
