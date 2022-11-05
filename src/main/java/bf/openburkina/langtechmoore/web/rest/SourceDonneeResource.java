@@ -193,10 +193,10 @@ public class SourceDonneeResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("/source-donnees/upload")
-    public ResponseEntity<MResponse> uploadSourceDonnee(@Valid @RequestBody byte[] fichier)
+    public ResponseEntity<MResponse> uploadSourceDonnee(@RequestBody SourceDonneeDTO s)
         throws IOException {
-        log.debug("REST request to save SourceDonnee : {}", fichier);
-        MResponse result = sourceDonneeService.saveComplete(fichier);
+        log.debug("REST request to save SourceDonnee : {}", s);
+        MResponse result = sourceDonneeService.saveComplete(s.getFile());
         return ResponseEntity.ok().body(result);
     }
 }
