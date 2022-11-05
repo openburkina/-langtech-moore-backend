@@ -2,7 +2,9 @@ package bf.openburkina.langtechmoore.service.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Objects;
+import javax.persistence.Lob;
 import javax.validation.constraints.*;
 
 /**
@@ -23,6 +25,9 @@ public class SourceDonneeDTO implements Serializable {
     private UtilisateurDTO utilisateur;
 
     private Long utilisateurId;
+
+    @Lob
+    private byte[] file;
 
     public Long getId() {
         return id;
@@ -72,6 +77,14 @@ public class SourceDonneeDTO implements Serializable {
         this.utilisateurId = utilisateurId;
     }
 
+    public byte[] getFile() {
+        return file;
+    }
+
+    public void setFile(byte[] file) {
+        this.file = file;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -93,14 +106,16 @@ public class SourceDonneeDTO implements Serializable {
         return Objects.hash(this.id);
     }
 
-    // prettier-ignore
     @Override
     public String toString() {
         return "SourceDonneeDTO{" +
-            "id=" + getId() +
-            ", libelle='" + getLibelle() + "'" +
-            ", categorie=" + getCategorie() +
-            ", utilisateur=" + getUtilisateur() +
-            "}";
+            "id=" + id +
+            ", libelle='" + libelle + '\'' +
+            ", categorie=" + categorie +
+            ", categorieId=" + categorieId +
+            ", utilisateur=" + utilisateur +
+            ", utilisateurId=" + utilisateurId +
+            ", file=" + Arrays.toString(file) +
+            '}';
     }
 }
