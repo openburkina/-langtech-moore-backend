@@ -11,6 +11,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -143,7 +144,7 @@ public class TraductionService {
         traductionRepository.deleteById(id);
     }
 
-   /* public ResponseEntity<Void> saveMultimedia(MultipartFile file) throws IOException {
+  /*  public  TraductionDTO saveMultimedia(MultipartFile file) throws IOException {
         TraductionDTO traductionDTO=new TraductionDTO();
         traductionDTO.setLibelle(file.getOriginalFilename());
         traductionDTO.setType(TypeTraduction.AUDIO);
@@ -156,28 +157,31 @@ public class TraductionService {
         }
        return  null;
     }*/
-
     // TODO: 03/11/2022 Service pour la sauvegarde des fichiers multimedia dans un repertoire
 
-    public ResponseEntity<Void> saveMultimedia(TraductionDTO traductionDTO)  {
-        if(traductionDTO.getContenuAudio()!=null){
+    public TraductionDTO saveMultimedia(TraductionDTO traductionDTO)  {
+        if(traductionDTO.getType().equals(TypeTraduction.AUDIO) && traductionDTO.getContenuAudio()!=null){
             log.debug("------byte---------------"+traductionDTO.getContenuAudio().toString());
             log.debug("------byte---------------"+traductionDTO.getLibelle());
             return  saveDocToFolder(traductionDTO);
+        } else {
+            Traduction traduction=traductionMapper.toEntity(traductionDTO);
+            traductionRepository.save(traduction);
         }
         return  null;
     }
 
 
 
-    public ResponseEntity<Void> saveDocToFolder(TraductionDTO traductionDTO)  {
+    public TraductionDTO saveDocToFolder(TraductionDTO traductionDTO)  {
         String docName=null;
         String idTraduction= null;
         String finalDirectory=null;
         byte[] content= traductionDTO.getContenuAudio();
         String contentType=getDocType(traductionDTO.getContenuAudioContentType());
-        docName=traductionDTO.getLibelle();
-        docName=docName.replace(" ", "_");
+        String numeroRandom = RandomStringUtils.randomAlphabetic(3);
+        docName="tradution"+numeroRandom;
+        //docName=docName.replace(" ", "_");
         // TODO: 03/11/2022 controle sur le systeme d'exploitation
         final String keyDirectory = (SystemUtils.IS_OS_LINUX ? docPathLinux : docPathWindows);
         if (SystemUtils.IS_OS_WINDOWS) {
@@ -187,6 +191,7 @@ public class TraductionService {
         }
         traductionDTO.setContenuAudio(null);
         Traduction traduction=traductionRepository.save(traductionMapper.toEntity(traductionDTO));
+        docName=docName+traduction.getId().toString();
         log.debug("xontent type*************---"+contentType);
         try {
 
@@ -208,14 +213,12 @@ public class TraductionService {
                 log.debug("****---------Generate 2---------------*****");
                 traduction.setCheminDocument(folderToSave);
                 traductionRepository.save(traduction);
+                traductionDTO.setContenuAudio(content);
                 BufferedOutputStream stream = new BufferedOutputStream(
                     new FileOutputStream(traductionFile));
                 stream.write(content);
                 stream.close();
-                return ResponseEntity
-                    .noContent()
-                    .headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, false, ENTITY_NAME, traductionDTO.getLibelle()))
-                    .build();
+                return traductionDTO;
 
             }
             return null;
@@ -225,11 +228,7 @@ public class TraductionService {
             log.debug("Message error"+e.getLocalizedMessage());
             log.debug("**************************",e.getCause());
             log.debug("****--------------*********"+e.toString());
-
-            return ResponseEntity
-                .noContent()
-                .headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, false, ENTITY_NAME, traductionDTO.getLibelle()))
-                .build();
+            return  null;
         }
 
     }

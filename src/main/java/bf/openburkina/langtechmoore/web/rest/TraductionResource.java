@@ -198,14 +198,14 @@ public class TraductionResource {
             .build();
     }
 
-    /*@PostMapping("/upload/traduction/fichier")
-    public ResponseEntity<Void> singleFileUpload(@RequestBody MultipartFile file) throws  Exception {
+ /*   @PostMapping("/upload/traduction/fichier")
+    public TraductionDTO singleFileUpload(@RequestBody MultipartFile file) throws  Exception {
          return  traductionService.saveMultimedia(file);
     }*/
 
     // TODO: 03/11/2022 Resource d'appel pour la création de traduction avec depot ficchier sur le repertoire ajout du nouveau champ de stockage du lien du fichier
-    @PostMapping("/upload/traduction/fichier")
-    public ResponseEntity<Void> singleFileUpload(@RequestBody TraductionDTO traductionDTO) throws  Exception {
+     @PostMapping("/upload/traduction/fichier")
+    public TraductionDTO singleFileUpload(@RequestBody TraductionDTO traductionDTO) throws  Exception {
         return  traductionService.saveMultimedia(traductionDTO);
     }
 
