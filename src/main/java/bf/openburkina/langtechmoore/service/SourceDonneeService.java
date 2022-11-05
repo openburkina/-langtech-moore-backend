@@ -6,6 +6,7 @@ import bf.openburkina.langtechmoore.repository.CategorieRepository;
 import bf.openburkina.langtechmoore.repository.SourceDonneeRepository;
 import bf.openburkina.langtechmoore.service.dto.MResponse;
 import bf.openburkina.langtechmoore.service.dto.SourceDonneeDTO;
+import bf.openburkina.langtechmoore.service.mapper.CategorieMapper;
 import bf.openburkina.langtechmoore.service.mapper.SourceDonneeMapper;
 
 import java.io.IOException;
@@ -40,11 +41,14 @@ public class SourceDonneeService {
 
     private final CategorieRepository categorieRepository;
 
-    public SourceDonneeService(SourceDonneeRepository sourceDonneeRepository, SourceDonneeMapper sourceDonneeMapper, UtilsService utilsService, CategorieRepository categorieRepository) {
+    private final CategorieMapper categorieMapper;
+
+    public SourceDonneeService(SourceDonneeRepository sourceDonneeRepository, SourceDonneeMapper sourceDonneeMapper, UtilsService utilsService, CategorieRepository categorieRepository, CategorieMapper categorieMapper) {
         this.sourceDonneeRepository = sourceDonneeRepository;
         this.sourceDonneeMapper = sourceDonneeMapper;
         this.utilsService = utilsService;
         this.categorieRepository = categorieRepository;
+        this.categorieMapper = categorieMapper;
     }
 
     /**
@@ -133,6 +137,8 @@ public class SourceDonneeService {
      * @param fichier the entity to save.
      * @return the persisted entity.
      */
+
+    @Transactional()
     public MResponse saveComplete(byte[] fichier) throws IOException {
 
         InputStream fis = utilsService.bytesToInputStream(fichier);
@@ -153,21 +159,23 @@ public class SourceDonneeService {
                         m.setMsg("Erreur sur la feuille " + sheet.getSheetName());
                     } else {
                         if (r.getRowNum() != 0 && r != null && utilsService.getCellValue(r.getCell(0)) != null && utilsService.getCellValue(r.getCell(1)) != null){
-                            SourceDonneeDTO s = new SourceDonneeDTO();
-                            Categorie c = categorieRepository.findByLibelle(utilsService.getCellValue(r.getCell(1)));
-
-                            if (c != null){
-                                s.setLibelle(utilsService.getCellValue(r.getCell(0)));
-                                s.setCategorieId(c.getId());
-
-                                save(s);
-                            } else {
-                                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-                                m.setCode("-1");
-                                m.setMsg("Erreur sur la categorie " + utilsService.getCellValue(r.getCell(1)));
-
-                                return m;
+                            SourceDonnee s = new SourceDonnee();
+                            String categorieLibelle = utilsService.getCellValue(r.getCell(1));
+                            if (categorieLibelle != null){
+                                Categorie c = categorieRepository.findByLibelle(categorieLibelle);
+                                if (c != null){
+                                    s.setCategorie(c);
+                                }
                             }
+                            s.setLibelle(utilsService.getCellValue(r.getCell(0)));
+//                            else {
+//                                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+//                                m.setCode("-1");
+//                                m.setMsg("Erreur sur la categorie " + utilsService.getCellValue(r.getCell(1)));
+//
+//                                return m;
+//                            }
+                            sourceDonneeRepository.save(s);
                         }
                     }
                 }
