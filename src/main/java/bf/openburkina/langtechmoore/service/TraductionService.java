@@ -213,6 +213,7 @@ public class TraductionService {
                 log.debug("****---------Generate 2---------------*****");
                 traduction.setCheminDocument(folderToSave);
                 traductionRepository.save(traduction);
+                traductionDTO=traductionMapper.toDto(traduction);
                 traductionDTO.setContenuAudio(content);
                 BufferedOutputStream stream = new BufferedOutputStream(
                     new FileOutputStream(traductionFile));
