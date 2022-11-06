@@ -1,9 +1,13 @@
 package bf.openburkina.langtechmoore.web.rest;
 
+import bf.openburkina.langtechmoore.domain.Traduction;
 import bf.openburkina.langtechmoore.repository.TraductionRepository;
 import bf.openburkina.langtechmoore.service.TraductionService;
 import bf.openburkina.langtechmoore.service.dto.TraductionDTO;
 import bf.openburkina.langtechmoore.web.rest.errors.BadRequestAlertException;
+
+import java.io.File;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -11,6 +15,10 @@ import java.util.Objects;
 import java.util.Optional;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+
+import io.micrometer.core.annotation.Timed;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,6 +28,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import tech.jhipster.web.util.HeaderUtil;
 import tech.jhipster.web.util.PaginationUtil;
@@ -71,7 +80,7 @@ public class TraductionResource {
     /**
      * {@code PUT  /traductions/:id} : Updates an existing traduction.
      *
-     * @param id the id of the traductionDTO to save.
+     * @param id            the id of the traductionDTO to save.
      * @param traductionDTO the traductionDTO to update.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated traductionDTO,
      * or with status {@code 400 (Bad Request)} if the traductionDTO is not valid,
@@ -105,7 +114,7 @@ public class TraductionResource {
     /**
      * {@code PATCH  /traductions/:id} : Partial updates given fields of an existing traduction, field will ignore if it is null
      *
-     * @param id the id of the traductionDTO to save.
+     * @param id            the id of the traductionDTO to save.
      * @param traductionDTO the traductionDTO to update.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated traductionDTO,
      * or with status {@code 400 (Bad Request)} if the traductionDTO is not valid,
@@ -113,7 +122,7 @@ public class TraductionResource {
      * or with status {@code 500 (Internal Server Error)} if the traductionDTO couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PatchMapping(value = "/traductions/{id}", consumes = { "application/json", "application/merge-patch+json" })
+    @PatchMapping(value = "/traductions/{id}", consumes = {"application/json", "application/merge-patch+json"})
     public ResponseEntity<TraductionDTO> partialUpdateTraduction(
         @PathVariable(value = "id", required = false) final Long id,
         @NotNull @RequestBody TraductionDTO traductionDTO
@@ -187,5 +196,25 @@ public class TraductionResource {
             .noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))
             .build();
+    }
+
+ /*   @PostMapping("/upload/traduction/fichier")
+    public TraductionDTO singleFileUpload(@RequestBody MultipartFile file) throws  Exception {
+         return  traductionService.saveMultimedia(file);
+    }*/
+
+    // TODO: 03/11/2022 Resource d'appel pour la création de traduction avec depot ficchier sur le repertoire ajout du nouveau champ de stockage du lien du fichier
+     @PostMapping("/upload/traduction/fichier")
+    public TraductionDTO singleFileUpload(@RequestBody TraductionDTO traductionDTO) throws  Exception {
+        return  traductionService.saveMultimedia(traductionDTO);
+    }
+
+
+    // TODO: 03/11/2022 Resource pour la récupération des traductions
+
+    @GetMapping("/document/traduction")
+    @Timed
+    public TraductionDTO getDocTraduction(@RequestParam Long traductionId) throws IOException {
+        return traductionService.getTraductionDoc(traductionId);
     }
 }

@@ -16,6 +16,9 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface TraductionRepository extends JpaRepository<Traduction, Long> {
 
+    @Query("select t from Traduction t where t.id=:traductionId ")
+    Traduction findByTraductionId(@Param("traductionId") Long traductionId);
+
     @Query("select tr from Traduction tr where (" +
             "(:libelle is null or :libelle='' or tr.libelle like ('%'||:libelle||'%') )" +
             " and (:etat is null or :etat='' or tr.etat like ('%'||:etat||'%'))" +
