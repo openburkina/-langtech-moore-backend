@@ -32,9 +32,13 @@ spring:
       indent-output: true
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
-    url: jdbc:postgresql://localhost:5432/langtechMooreBackend
-    username: langtechMooreBackend
-    password: langtechMooreBackend
+#    url: jdbc:postgresql://localhost:5432/langtechMooreBackend
+#    username: langtechMooreBackend
+#    password: langtechMooreBackend
+    url: jdbc:postgresql://localhost:5432/langtech
+    username: postgres
+    password: admin
+
     hikari:
       poolName: Hikari
       auto-commit: false
@@ -84,11 +88,7 @@ jhipster:
   # CORS is only enabled by default with the "dev" profile
   cors:
     # Allow Ionic for JHipster by default (* no longer allowed in Spring Boot 2.4+)
-<<<<<<< HEAD
-    allowed-origins: 'http://localhost:4200,https://localhost:5000,http://localhost:9000,https://localhost:9000'
-=======
     allowed-origins: 'http://localhost:8100,https://localhost:8100,http://localhost:9000,https://localhost:9000,http://localhost:4200'
->>>>>>> 798684a2a586f9be3a0967146dd42daad850642a
     # Enable CORS when running in GitHub Codespaces
     allowed-origin-patterns: 'https://*.githubpreview.dev'
     allowed-methods: '*'
