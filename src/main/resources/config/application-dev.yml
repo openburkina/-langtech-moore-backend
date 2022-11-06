@@ -32,12 +32,12 @@ spring:
       indent-output: true
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
-#    url: jdbc:postgresql://localhost:5432/langtechMooreBackend
-#    username: langtechMooreBackend
-#    password: langtechMooreBackend
-    url: jdbc:postgresql://localhost:5432/langtech
-    username: postgres
-    password: admin
+    url: jdbc:postgresql://localhost:5432/langtechMooreBackend
+    username: langtechMooreBackend
+    password: langtechMooreBackend
+#    url: jdbc:postgresql://localhost:5432/langtech
+#    username: postgres
+#    password: admin
 
     hikari:
       poolName: Hikari

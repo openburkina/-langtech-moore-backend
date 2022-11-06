@@ -113,8 +113,8 @@ public class TraductionService {
         log.debug("Request to get all Traductions");
         return traductionRepository.findAllWithCriteria(
             traductionDTO.getLibelle(),
-            traductionDTO.getEtat(),
-            traductionDTO.getType(),
+            traductionDTO.getEtat()!=null?traductionDTO.getEtat().name():null,
+            traductionDTO.getType()!=null?traductionDTO.getType().name():null,
             traductionDTO.getContenuAudioContentType(),
             traductionDTO.getSourceDonnee()!=null?traductionDTO.getSourceDonnee().getId():null,
             traductionDTO.getUtilisateur()!=null?traductionDTO.getUtilisateur().getId():null,

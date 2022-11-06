@@ -152,6 +152,14 @@ public class UtilisateurResource {
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
 
+    @PostMapping("/utilisateurs/criteria")
+    public ResponseEntity<List<UtilisateurDTO>> getAllUtilisateurs(@RequestBody UtilisateurDTO utilisateurDTO,@org.springdoc.api.annotations.ParameterObject Pageable pageable) {
+        log.debug("REST request to get a page of Utilisateurs");
+        Page<UtilisateurDTO> page = utilisateurService.findAllByCriteria(utilisateurDTO,pageable);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
+    }
+
     /**
      * {@code GET  /utilisateurs/:id} : get the "id" utilisateur.
      *

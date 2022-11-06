@@ -29,8 +29,8 @@ public interface TraductionRepository extends JpaRepository<Traduction, Long> {
             " and(:langueId is null or tr.langue.id=:langueId))")
     Page<Traduction> findAllWithCriteria(
         @Param("libelle") String libelle,
-        @Param("etat") Etat etat,
-        @Param("typeTraduction") TypeTraduction typeTraduction,
+        @Param("etat") String etat,
+        @Param("typeTraduction") String typeTraduction,
         @Param("contenuAudioContentType") String contenuAudioContentType,
         @Param("sourceDonneeId") Long sourceDonneeId,
         @Param("utilisateurId") Long utilisateurId,
