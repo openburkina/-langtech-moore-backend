@@ -88,6 +88,18 @@ public class UtilisateurService {
         return utilisateurRepository.findAll(pageable).map(utilisateurMapper::toDto);
     }
 
+    @Transactional(readOnly = true)
+    public Page<UtilisateurDTO> findAllByCriteria(UtilisateurDTO utilisateurDTO,Pageable pageable) {
+        log.debug("Request to get all Traductions");
+        return utilisateurRepository.findAllWithCriteria(
+            utilisateurDTO.getNom(),
+            utilisateurDTO.getPrenom(),
+            utilisateurDTO.getEmail(),
+            utilisateurDTO.getTelephone(),
+            utilisateurDTO.getTypeUtilisateur()!=null?utilisateurDTO.getTypeUtilisateur():null
+            ,pageable).map(utilisateurMapper::toDto);
+    }
+
     /**
      * Get one utilisateur by id.
      *
