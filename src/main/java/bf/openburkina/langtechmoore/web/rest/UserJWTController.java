@@ -9,6 +9,9 @@ import bf.openburkina.langtechmoore.service.dto.UserDTO;
 import bf.openburkina.langtechmoore.web.rest.vm.LoginVM;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import javax.validation.Valid;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +29,8 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api")
 public class UserJWTController {
+
+    private final Logger log = LoggerFactory.getLogger(UserJWTController.class);
 
     private final TokenProvider tokenProvider;
 
@@ -59,6 +64,9 @@ public class UserJWTController {
             .map(UserDTO::new)
             .orElseThrow(() -> new AccountResourceException("User could not be found"));
         Optional<Utilisateur> utilisateur = utilisateurRepository.findByUserId(adminUserDTO.getId());
+        if (utilisateur.isPresent()) {
+            log.debug(utilisateur.get().toString());
+        }
         return new ResponseEntity<>(new JWTToken(jwt,utilisateur.get()), httpHeaders, HttpStatus.OK);
     }
 

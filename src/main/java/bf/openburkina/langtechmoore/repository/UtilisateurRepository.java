@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -17,6 +18,8 @@ import java.util.Optional;
 @Repository
 public interface UtilisateurRepository extends JpaRepository<Utilisateur, Long> {
     Optional<Utilisateur> findByUserId(Long userId);
+
+    Optional<List<Utilisateur>> findByTypeUtilisateur(TypeUtilisateur typeUtilisateur);
 
     @Query("select u from Utilisateur u where (" +
         "(:nom is null or :nom='' or u.nom like ('%'||:nom||'%') )" +
