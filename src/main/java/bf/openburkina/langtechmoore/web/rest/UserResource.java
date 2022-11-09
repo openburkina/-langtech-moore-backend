@@ -209,4 +209,14 @@ public class UserResource {
             .headers(HeaderUtil.createAlert(applicationName, "A user is deleted with identifier " + login, login))
             .build();
     }
+
+    /**
+     * Get all authorities
+     * @return
+     */
+    @GetMapping("/users/authorities")
+    public ResponseEntity<List<String>> getAllAuthorities() {
+        log.debug("REST request to get all authorities");
+        return ResponseEntity.ok().body(userService.getAuthorities());
+    }
 }
