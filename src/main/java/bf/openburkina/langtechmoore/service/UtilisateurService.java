@@ -1,10 +1,15 @@
 package bf.openburkina.langtechmoore.service;
 
 import bf.openburkina.langtechmoore.domain.Utilisateur;
+import bf.openburkina.langtechmoore.domain.enumeration.TypeUtilisateur;
 import bf.openburkina.langtechmoore.repository.UtilisateurRepository;
 import bf.openburkina.langtechmoore.service.dto.UtilisateurDTO;
 import bf.openburkina.langtechmoore.service.mapper.UtilisateurMapper;
+
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -96,7 +101,7 @@ public class UtilisateurService {
             utilisateurDTO.getPrenom(),
             utilisateurDTO.getEmail(),
             utilisateurDTO.getTelephone(),
-            utilisateurDTO.getTypeUtilisateur()!=null?utilisateurDTO.getTypeUtilisateur().name():null
+            utilisateurDTO.getTypeUtilisateur()!=null?utilisateurDTO.getTypeUtilisateur():null
             ,pageable).map(utilisateurMapper::toDto);
     }
 
@@ -120,5 +125,10 @@ public class UtilisateurService {
     public void delete(Long id) {
         log.debug("Request to delete Utilisateur : {}", id);
         utilisateurRepository.deleteById(id);
+    }
+
+    public List<UtilisateurDTO> findAllContributeur() {
+        Optional<List<Utilisateur>> optionalUtilisateurs = utilisateurRepository.findByTypeUtilisateur(TypeUtilisateur.CONTRIBUTEUR);
+        return optionalUtilisateurs.map(utilisateurs -> utilisateurs.stream().map(utilisateurMapper::toDto).collect(Collectors.toList())).orElse(null);
     }
 }

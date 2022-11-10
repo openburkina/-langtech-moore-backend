@@ -1,12 +1,14 @@
 package bf.openburkina.langtechmoore.repository;
 
 import bf.openburkina.langtechmoore.domain.Utilisateur;
+import bf.openburkina.langtechmoore.domain.enumeration.TypeUtilisateur;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -16,6 +18,8 @@ import java.util.Optional;
 @Repository
 public interface UtilisateurRepository extends JpaRepository<Utilisateur, Long> {
     Optional<Utilisateur> findByUserId(Long userId);
+
+    Optional<List<Utilisateur>> findByTypeUtilisateur(TypeUtilisateur typeUtilisateur);
 
     @Query("select u from Utilisateur u where (" +
         "(:nom is null or :nom='' or u.nom like ('%'||:nom||'%') )" +
@@ -28,5 +32,5 @@ public interface UtilisateurRepository extends JpaRepository<Utilisateur, Long> 
         @Param("prenom") String prenom,
         @Param("email") String email,
         @Param("telephone") String telephone,
-        @Param("typeUtilisateur") String typeUtilisateur, Pageable pageable);
+        @Param("typeUtilisateur") TypeUtilisateur typeUtilisateur, Pageable pageable);
 }

@@ -7,6 +7,8 @@ import bf.openburkina.langtechmoore.service.dto.TraductionDTO;
 import bf.openburkina.langtechmoore.service.mapper.TraductionMapper;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -244,11 +246,12 @@ public class TraductionService {
         if(traductionId!=null){
             Traduction traduction =traductionRepository.findByTraductionId(traductionId);
             traductionDTO=traductionMapper.toDto(traduction);
-            if(traduction.getId()!=null){
+            if(traduction.getId()!=null && traduction.getType().equals(TypeTraduction.AUDIO)){
                 traductionFolder=traduction.getCheminDocument();
                 File img = new File(traductionFolder);
                 log.debug("is file------"+img+"et bool"+img.isFile());
-                bytes = FileUtils.readFileToByteArray(img);
+                // bytes = FileUtils.readFileToByteArray(img);
+                bytes = Files.readAllBytes(Path.of(img.getPath()));
                 traductionDTO.setContenuAudio(bytes);
             }
 

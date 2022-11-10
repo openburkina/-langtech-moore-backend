@@ -152,6 +152,12 @@ public class UtilisateurResource {
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
 
+    @GetMapping("/utilisateurs/contributeurs")
+    public ResponseEntity<List<UtilisateurDTO>> getAllContributeurs() {
+        log.debug("REST Request to get all contributeurs");
+        return ResponseEntity.ok().body(utilisateurService.findAllContributeur());
+    }
+
     @PostMapping("/utilisateurs/criteria")
     public ResponseEntity<List<UtilisateurDTO>> getAllUtilisateurs(@RequestBody UtilisateurDTO utilisateurDTO,@org.springdoc.api.annotations.ParameterObject Pageable pageable) {
         log.debug("REST request to get a page of Utilisateurs");

@@ -23,15 +23,19 @@ public interface TraductionMapper extends EntityMapper<TraductionDTO, Traduction
     @Named("utilisateurId")
     @BeanMapping(ignoreByDefault = true)
     @Mapping(target = "id", source = "id")
+    @Mapping(target = "nom", source = "nom")
+    @Mapping(target = "prenom", source = "prenom")
     UtilisateurDTO toDtoUtilisateurId(Utilisateur utilisateur);
 
     @Named("sourceDonneeId")
     @BeanMapping(ignoreByDefault = true)
     @Mapping(target = "id", source = "id")
+    @Mapping(target = "libelle", source = "libelle")
     SourceDonneeDTO toDtoSourceDonneeId(SourceDonnee sourceDonnee);
 
     @Named("langueId")
     @BeanMapping(ignoreByDefault = true)
     @Mapping(target = "id", source = "id")
+    @Mapping(target = "libelle", source = "libelle")
     LangueDTO toDtoLangueId(Langue langue);
 }

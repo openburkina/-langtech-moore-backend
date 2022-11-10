@@ -4,6 +4,7 @@ import bf.openburkina.langtechmoore.domain.enumeration.Etat;
 import bf.openburkina.langtechmoore.domain.enumeration.TypeTraduction;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Objects;
 import javax.persistence.Lob;
 import javax.validation.constraints.*;
@@ -162,19 +163,21 @@ public class TraductionDTO implements Serializable {
         return Objects.hash(this.id);
     }
 
-    // prettier-ignore
     @Override
     public String toString() {
         return "TraductionDTO{" +
-            "id=" + getId() +
-            ", libelle='" + getLibelle() + "'" +
-            ", contenuTexte='" + getContenuTexte() + "'" +
-            ", contenuAudio='" + getContenuAudio() + "'" +
-            ", type='" + getType() + "'" +
-            ", note=" + getNote() +
-            ", etat='" + getEtat() + "'" +
-            ", utilisateur=" + getUtilisateur() +
-            ", sourceDonnee=" + getSourceDonnee() +
-            "}";
+            "id=" + id +
+            ", libelle='" + libelle + '\'' +
+            ", contenuTexte='" + contenuTexte + '\'' +
+            ", contenuAudio=" + Arrays.toString(contenuAudio) +
+            ", contenuAudioContentType='" + contenuAudioContentType + '\'' +
+            ", type=" + type +
+            ", note=" + note +
+            ", cheminDocument='" + cheminDocument + '\'' +
+            ", etat=" + etat +
+            ", utilisateur=" + utilisateur +
+            ", sourceDonnee=" + sourceDonnee +
+            ", langue=" + langue +
+            '}';
     }
 }
