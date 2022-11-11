@@ -242,7 +242,7 @@ public class TraductionService {
         TraductionDTO traductionDTO=new TraductionDTO();
         log.debug("*---------------"+traductionId);
         String traductionFolder=null;
-        byte[] bytes=null;
+        byte[] bytes;
         if(traductionId!=null){
             Traduction traduction =traductionRepository.findByTraductionId(traductionId);
             traductionDTO=traductionMapper.toDto(traduction);
@@ -251,7 +251,7 @@ public class TraductionService {
                 File img = new File(traductionFolder);
                 log.debug("is file------"+img+"et bool"+img.isFile());
                 // bytes = FileUtils.readFileToByteArray(img);
-                bytes = Files.readAllBytes(Path.of(img.getPath()));
+                 bytes = Files.readAllBytes(Path.of(img.getPath()));
                 traductionDTO.setContenuAudio(bytes);
             }
 
