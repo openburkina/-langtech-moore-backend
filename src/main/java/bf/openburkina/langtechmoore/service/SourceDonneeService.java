@@ -59,7 +59,9 @@ public class SourceDonneeService {
      */
     public SourceDonneeDTO save(SourceDonneeDTO sourceDonneeDTO) {
         log.debug("Request to save SourceDonnee : {}", sourceDonneeDTO);
-        SourceDonnee sourceDonnee = sourceDonneeMapper.toEntity(sourceDonneeDTO);
+        //SourceDonnee sourceDonnee = sourceDonneeMapper.toEntity(sourceDonneeDTO);
+        SourceDonnee sourceDonnee = new SourceDonnee();
+        sourceDonnee.setLibelle(sourceDonneeDTO.getLibelle());
         sourceDonnee = sourceDonneeRepository.save(sourceDonnee);
         return sourceDonneeMapper.toDto(sourceDonnee);
     }
@@ -72,8 +74,14 @@ public class SourceDonneeService {
      */
     public SourceDonneeDTO update(SourceDonneeDTO sourceDonneeDTO) {
         log.debug("Request to save SourceDonnee : {}", sourceDonneeDTO);
-        SourceDonnee sourceDonnee = sourceDonneeMapper.toEntity(sourceDonneeDTO);
-        sourceDonnee = sourceDonneeRepository.save(sourceDonnee);
+        Optional<SourceDonnee> src= sourceDonneeRepository.findById(sourceDonneeDTO.getId());
+        SourceDonnee sourceDonnee =null;
+        if (src.isPresent()){
+            src.get().setLibelle(sourceDonneeDTO.getLibelle());
+            sourceDonnee= sourceDonneeRepository.save(src.get());
+        }
+       // SourceDonnee sourceDonnee = sourceDonneeMapper.toEntity(sourceDonneeDTO);
+
         return sourceDonneeMapper.toDto(sourceDonnee);
     }
 
