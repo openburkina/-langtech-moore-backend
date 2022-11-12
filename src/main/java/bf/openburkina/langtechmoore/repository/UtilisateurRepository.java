@@ -19,6 +19,8 @@ import java.util.Optional;
 public interface UtilisateurRepository extends JpaRepository<Utilisateur, Long> {
     Optional<Utilisateur> findByUserId(Long userId);
 
+    List<Utilisateur> findByProfilId(Long id);
+
     Optional<List<Utilisateur>> findByTypeUtilisateur(TypeUtilisateur typeUtilisateur);
 
     @Query("select u from Utilisateur u where (" +
