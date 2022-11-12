@@ -117,6 +117,12 @@ public class SourceDonneeService {
         return sourceDonneeRepository.findAll(pageable).map(sourceDonneeMapper::toDto);
     }
 
+    @Transactional(readOnly = true)
+    public Page<SourceDonneeDTO> findAllByCriteria(SourceDonneeDTO sourceDonneeDTO,Pageable pageable) {
+        log.debug("Request to get all SourceDonnees");
+        return sourceDonneeRepository.findAllWithCriteria(sourceDonneeDTO.getLibelle(),pageable).map(sourceDonneeMapper::toDto);
+    }
+
     /**
      * Get one sourceDonnee by id.
      *

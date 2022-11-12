@@ -156,6 +156,14 @@ public class SourceDonneeResource {
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
 
+    @PostMapping("/source-donnees/criteria")
+    public ResponseEntity<List<SourceDonneeDTO>> getAllSourceDonneesByCriteria(@RequestBody SourceDonneeDTO sourceDonneeDTO,@org.springdoc.api.annotations.ParameterObject Pageable pageable) {
+        log.debug("REST request to get a page of SourceDonnees");
+        Page<SourceDonneeDTO> page = sourceDonneeService.findAllByCriteria(sourceDonneeDTO,pageable);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
+    }
+
     /**
      * {@code GET  /source-donnees/:id} : get the "id" sourceDonnee.
      *
