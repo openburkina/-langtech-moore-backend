@@ -1,9 +1,11 @@
 package bf.openburkina.langtechmoore.service.dto;
 
+import bf.openburkina.langtechmoore.domain.Authority;
 import bf.openburkina.langtechmoore.domain.User;
 
 import java.time.Instant;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * A DTO representing a user, with only the public attributes.
@@ -23,6 +25,8 @@ public class UserDTO {
     private String email;
 
     private boolean activated = false;
+
+    private boolean defaultPassord;
 
     private String langKey;
 
@@ -46,7 +50,6 @@ public class UserDTO {
         this.login = user.getLogin();
         this.activated = user.isActivated();
         this.activationKey = user.getActivationKey();
-        this.authorities = this.getAuthorities();
         this.email = user.getEmail();
         this.firstName = user.getFirstName();
         this.imageUrl = user.getImageUrl();
@@ -54,6 +57,17 @@ public class UserDTO {
         this.resetDate = user.getResetDate();
         this.resetKey = user.getResetKey();
         this.lastName = user.getLastName();
+        this.defaultPassord = user.getDefaultPassord();
+        this.authorities = user.getAuthorities().stream().map(Authority::getName).collect(Collectors.toSet());
+
+    }
+
+    public boolean getDefaultPassord() {
+        return defaultPassord;
+    }
+
+    public void setDefaultPassord(boolean defaultPassord) {
+        this.defaultPassord = defaultPassord;
     }
 
     public Long getId() {

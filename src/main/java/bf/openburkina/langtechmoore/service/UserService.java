@@ -92,6 +92,7 @@ public class UserService {
                 user.setPassword(passwordEncoder.encode(newPassword));
                 user.setResetKey(null);
                 user.setResetDate(null);
+                user.setDefaultPassord(false);
                 this.clearUserCaches(user);
                 return user;
             });
@@ -104,6 +105,8 @@ public class UserService {
             .map(user -> {
                 user.setResetKey(RandomUtil.generateResetKey());
                 user.setResetDate(Instant.now());
+                user.setDefaultPassord(true);
+                user.setPassword(passwordEncoder.encode("langtech"));
                 this.clearUserCaches(user);
                 return user;
             });
@@ -143,7 +146,8 @@ public class UserService {
        // newUser.setActivated(false);
         newUser.setActivated(true);
         // new user gets registration key
-        newUser.setActivationKey(RandomUtil.generateActivationKey());
+        //newUser.setActivationKey(RandomUtil.generateActivationKey());
+        newUser.setActivationKey(null);
         Set<Authority> authorities = new HashSet<>();
         authorityRepository.findById(AuthoritiesConstants.USER).ifPresent(authorities::add);
         newUser.setAuthorities(authorities);
@@ -305,6 +309,7 @@ public class UserService {
                 }
                 String encryptedPassword = passwordEncoder.encode(newPassword);
                 user.setPassword(encryptedPassword);
+                user.setDefaultPassord(false);
                 this.clearUserCaches(user);
                 log.debug("Changed password for User: {}", user);
             });

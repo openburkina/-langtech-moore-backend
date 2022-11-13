@@ -17,5 +17,7 @@ public interface UtilisateurMapper extends EntityMapper<UtilisateurDTO, Utilisat
     @Named("profilId")
     @BeanMapping(ignoreByDefault = true)
     @Mapping(target = "id", source = "id")
+    @Mapping(target = "libelle", source = "libelle")
+    @Mapping(target = "description", source = "description")
     ProfilDTO toDtoProfilId(Profil profil);
 }

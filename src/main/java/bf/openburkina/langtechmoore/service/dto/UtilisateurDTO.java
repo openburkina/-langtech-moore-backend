@@ -1,5 +1,6 @@
 package bf.openburkina.langtechmoore.service.dto;
 
+import bf.openburkina.langtechmoore.domain.Utilisateur;
 import bf.openburkina.langtechmoore.domain.enumeration.TypeUtilisateur;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
@@ -24,6 +25,8 @@ public class UtilisateurDTO implements Serializable {
 
     private String login;
 
+    private String profilName;
+
     private String password;
 
 
@@ -32,6 +35,14 @@ public class UtilisateurDTO implements Serializable {
     private Integer pointFidelite;
 
     private ProfilDTO profil;
+
+    public String getProfilName() {
+        return profilName;
+    }
+
+    public void setProfilName(String profilName) {
+        this.profilName = profilName;
+    }
 
     public Long getId() {
         return id;

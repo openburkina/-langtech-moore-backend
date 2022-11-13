@@ -64,7 +64,7 @@ public class ProfilService {
             Set<String> auths = profilDTO.getAuthorities();
             //Ajout du role USER par default
             auths.add(AuthoritiesConstants.USER);
-            Set<Authority> authorities = profilDTO.getAuthorities().stream().map(authorityRepository::getOne).collect(Collectors.toSet());
+            Set<Authority> authorities = profilDTO.getAuthorities().stream().map(authorityRepository::getReferenceById).collect(Collectors.toSet());
             profil.setRoles(authorities);
 
             /*
@@ -110,6 +110,11 @@ public class ProfilService {
         return profilMapper.toDto(profil);
     }
 
+    public ProfilDTO updateProfil(ProfilDTO profilDTO) {
+        log.debug("Request to save Profil : {}", profilDTO);
+        return save(profilDTO);
+    }
+
     /**
      * Partially update a profil.
      *
@@ -139,8 +144,18 @@ public class ProfilService {
     @Transactional(readOnly = true)
     public Page<ProfilDTO> findAll(Pageable pageable) {
         log.debug("Request to get all Profils");
-        return profilRepository.findAll(pageable).map(profilMapper::toDto);
+        Page<ProfilDTO> profils = profilRepository.findAll(pageable).map(profilMapper::toDto);
+        for (ProfilDTO profilDTO : profils) {
+            Optional<ProfilDTO> profilDTO1 = this.findOne(profilDTO.getId());
+            profilDTO1.ifPresent(dto -> profilDTO.setAuthorities(dto.getAuthorities()));
+        }
+        return profils;
     }
+
+    /*public Page<ProfilDTO> findAll(Pageable pageable) {
+        log.debug("Request to get all Profils");
+        return profilRepository.findAll(pageable).map(profilMapper::toDto);
+    }*/
 
     /**
      * Get one profil by id.
@@ -151,8 +166,15 @@ public class ProfilService {
     @Transactional(readOnly = true)
     public Optional<ProfilDTO> findOne(Long id) {
         log.debug("Request to get Profil : {}", id);
-        return profilRepository.findById(id).map(profilMapper::toDto);
+        Profil profil = profilRepository.findOneWithEagerRelationships(id);
+        ProfilDTO profilDTO = profilMapper.toDto(profil);
+        profilDTO.setAuthorities(profil.getRoles().stream().map(Authority::getName).collect(Collectors.toSet()));
+        return Optional.of(profilDTO);
     }
+    /*public Optional<ProfilDTO> findOne(Long id) {
+        log.debug("Request to get Profil : {}", id);
+        return profilRepository.findById(id).map(profilMapper::toDto);
+    }*/
 
     /**
      * Delete the profil by id.
