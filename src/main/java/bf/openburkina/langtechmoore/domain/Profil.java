@@ -147,13 +147,14 @@ public class Profil implements Serializable {
         return getClass().hashCode();
     }
 
-    // prettier-ignore
     @Override
     public String toString() {
         return "Profil{" +
-            "id=" + getId() +
-            ", libelle='" + getLibelle() + "'" +
-            ", description='" + getDescription() + "'" +
-            "}";
+            "id=" + id +
+            ", libelle='" + libelle + '\'' +
+            ", description='" + description + '\'' +
+            ", utilisateurs=" + utilisateurs +
+            ", roles=" + roles +
+            '}';
     }
 }

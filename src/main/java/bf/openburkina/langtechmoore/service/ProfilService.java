@@ -66,6 +66,7 @@ public class ProfilService {
             auths.add(AuthoritiesConstants.USER);
             Set<Authority> authorities = profilDTO.getAuthorities().stream().map(authorityRepository::getOne).collect(Collectors.toSet());
             profil.setRoles(authorities);
+            log.debug("PROFIL INFOS ===> {}", profil);
 
             /*
             Mise à jour des roles des utilisateurs ayant ce profil
@@ -139,7 +140,13 @@ public class ProfilService {
     @Transactional(readOnly = true)
     public Page<ProfilDTO> findAll(Pageable pageable) {
         log.debug("Request to get all Profils");
-        return profilRepository.findAll(pageable).map(profilMapper::toDto);
+        Page<ProfilDTO> profils = profilRepository.findAll(pageable).map(profil -> {
+            ProfilDTO profilDTO = profilMapper.toDto(profil);
+            profilDTO.setAuthorities(profil.getRoles().stream().map(Authority::getName).collect(Collectors.toSet()));
+            return profilDTO;
+        });
+        log.debug("RETURN PROFILS ===> {}", profils.getContent());
+        return profils;
     }
 
     /**
@@ -151,7 +158,10 @@ public class ProfilService {
     @Transactional(readOnly = true)
     public Optional<ProfilDTO> findOne(Long id) {
         log.debug("Request to get Profil : {}", id);
-        return profilRepository.findById(id).map(profilMapper::toDto);
+        Profil profil = profilRepository.findOneWithEagerRelationships(id);
+        ProfilDTO profilDTO = profilMapper.toDto(profil);
+        profilDTO.setAuthorities(profil.getRoles().stream().map(Authority::getName).collect(Collectors.toSet()));
+        return Optional.of(profilDTO);
     }
 
     /**
