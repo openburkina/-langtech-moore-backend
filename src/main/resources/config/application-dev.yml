@@ -32,13 +32,9 @@ spring:
       indent-output: true
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
-#    url: jdbc:postgresql://178.128.248.138:5432/langtechdb
-#    url: jdbc:postgresql://localhost:5432/langtechdb
-#    username: admin_langtech
-#    password: LAn9T3M0OrE
-    url: jdbc:postgresql://localhost:5432/langtech
-    username: postgres
-    password: admin
+     url: jdbc:postgresql://localhost:5432/langtech
+     username: postgres
+     password: admin
     hikari:
       poolName: Hikari
       auto-commit: false
