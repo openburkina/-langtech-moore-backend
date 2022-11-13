@@ -64,8 +64,9 @@ public class ProfilService {
             Set<String> auths = profilDTO.getAuthorities();
             //Ajout du role USER par default
             auths.add(AuthoritiesConstants.USER);
-            Set<Authority> authorities = profilDTO.getAuthorities().stream().map(authorityRepository::getReferenceById).collect(Collectors.toSet());
+            Set<Authority> authorities = profilDTO.getAuthorities().stream().map(authorityRepository::getOne).collect(Collectors.toSet());
             profil.setRoles(authorities);
+            log.debug("PROFIL INFOS ===> {}", profil);
 
             /*
             Mise à jour des roles des utilisateurs ayant ce profil
@@ -144,18 +145,14 @@ public class ProfilService {
     @Transactional(readOnly = true)
     public Page<ProfilDTO> findAll(Pageable pageable) {
         log.debug("Request to get all Profils");
-        Page<ProfilDTO> profils = profilRepository.findAll(pageable).map(profilMapper::toDto);
-        for (ProfilDTO profilDTO : profils) {
-            Optional<ProfilDTO> profilDTO1 = this.findOne(profilDTO.getId());
-            profilDTO1.ifPresent(dto -> profilDTO.setAuthorities(dto.getAuthorities()));
-        }
+        Page<ProfilDTO> profils = profilRepository.findAll(pageable).map(profil -> {
+            ProfilDTO profilDTO = profilMapper.toDto(profil);
+            profilDTO.setAuthorities(profil.getRoles().stream().map(Authority::getName).collect(Collectors.toSet()));
+            return profilDTO;
+        });
+        log.debug("RETURN PROFILS ===> {}", profils.getContent());
         return profils;
     }
-
-    /*public Page<ProfilDTO> findAll(Pageable pageable) {
-        log.debug("Request to get all Profils");
-        return profilRepository.findAll(pageable).map(profilMapper::toDto);
-    }*/
 
     /**
      * Get one profil by id.
@@ -171,10 +168,6 @@ public class ProfilService {
         profilDTO.setAuthorities(profil.getRoles().stream().map(Authority::getName).collect(Collectors.toSet()));
         return Optional.of(profilDTO);
     }
-    /*public Optional<ProfilDTO> findOne(Long id) {
-        log.debug("Request to get Profil : {}", id);
-        return profilRepository.findById(id).map(profilMapper::toDto);
-    }*/
 
     /**
      * Delete the profil by id.

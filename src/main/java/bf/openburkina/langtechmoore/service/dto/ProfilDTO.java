@@ -105,13 +105,14 @@ public class ProfilDTO implements Serializable {
         return Objects.hash(this.id);
     }
 
-    // prettier-ignore
     @Override
     public String toString() {
         return "ProfilDTO{" +
-            "id=" + getId() +
-            ", libelle='" + getLibelle() + "'" +
-            ", description='" + getDescription() + "'" +
-            "}";
+            "id=" + id +
+            ", libelle='" + libelle + '\'' +
+            ", description='" + description + '\'' +
+            ", authorities=" + authorities +
+            ", profilsChange=" + profilsChange +
+            '}';
     }
 }
