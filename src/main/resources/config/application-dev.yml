@@ -36,8 +36,8 @@ spring:
 #    url: jdbc:postgresql://localhost:5432/langtechdb
 #    username: admin_langtech
 #    password: LAn9T3M0OrE
-    url: jdbc:postgresql://localhost:5432/langtech
-    username: postgres
+    url: jdbc:postgresql://localhost:5432/langtechMooreBackend
+    username: langtechMooreBackend
     password: admin
     hikari:
       poolName: Hikari
