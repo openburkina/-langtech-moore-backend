@@ -251,7 +251,7 @@ public class TraductionService {
                 File img = new File(traductionFolder);
                 log.debug("is file------"+img+"et bool"+img.isFile());
                 // bytes = FileUtils.readFileToByteArray(img);
-                 bytes = Files.readAllBytes(Path.of(img.getPath()));
+                  bytes = Files.readAllBytes(Path.of(img.getPath()));
                 traductionDTO.setContenuAudio(bytes);
             }
 
