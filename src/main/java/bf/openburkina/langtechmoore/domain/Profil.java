@@ -39,7 +39,7 @@ public class Profil implements Serializable {
     @JsonIgnoreProperties(value = { "sourceDonnees", "traductions", "profil" }, allowSetters = true)
     private Set<Utilisateur> utilisateurs = new HashSet<>();
 
-    @JsonIgnore
+
     @ManyToMany
     @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
     @JoinTable(
@@ -147,7 +147,7 @@ public class Profil implements Serializable {
         return getClass().hashCode();
     }
 
-    @Override
+   /* @Override
     public String toString() {
         return "Profil{" +
             "id=" + id +
@@ -156,5 +156,5 @@ public class Profil implements Serializable {
             ", utilisateurs=" + utilisateurs +
             ", roles=" + roles +
             '}';
-    }
+    }*/
 }
