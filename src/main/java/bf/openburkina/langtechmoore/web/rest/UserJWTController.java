@@ -72,8 +72,10 @@ public class UserJWTController {
             .orElseThrow(() -> new AccountResourceException("User could not be found"));
         Optional<Utilisateur> utilisateur = utilisateurRepository.findByUserId(adminUserDTO.getId());
         if (utilisateur.isPresent()) {
-            Profil profil = profilRepository.findOneWithEagerRelationships(utilisateur.get().getProfil().getId());
-            utilisateur.get().getProfil().setRoles(profil.getRoles().stream().collect(Collectors.toSet()));
+            if (utilisateur.get().getProfil()!=null){
+                Profil profil = profilRepository.findOneWithEagerRelationships(utilisateur.get().getProfil().getId());
+                utilisateur.get().getProfil().setRoles(profil.getRoles().stream().collect(Collectors.toSet()));
+            }
             log.debug(utilisateur.get().toString());
         }
         return new ResponseEntity<>(new JWTToken(jwt,utilisateur.get()), httpHeaders, HttpStatus.OK);

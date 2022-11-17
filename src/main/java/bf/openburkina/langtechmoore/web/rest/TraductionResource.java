@@ -182,6 +182,12 @@ public class TraductionResource {
         return ResponseUtil.wrapOrNotFound(traductionDTO);
     }
 
+    @GetMapping("/traductions-by-contibuteur/{id}")
+    public List<TraductionDTO> getTraductionByContributeur(@PathVariable Long id) {
+        log.debug("REST request to get Traduction : {}", id);
+        return traductionService.getTraductionByContributeur(id);
+    }
+
     /**
      * {@code DELETE  /traductions/:id} : delete the "id" traduction.
      *
