@@ -217,4 +217,17 @@ public class TraductionResource {
     public TraductionDTO getDocTraduction(@RequestParam Long traductionId) throws IOException {
         return traductionService.getTraductionDoc(traductionId);
     }
+
+    /**
+     * {@code GET  /traductions/:id} : get the "id" traduction.
+     *
+     * @param id the id of the traductionDTO to retrieve.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the traductionDTO, or with status {@code 404 (Not Found)}.
+     */
+    @PostMapping("/traductions/{id}")
+    public ResponseEntity<TraductionDTO> validation(@PathVariable Long id, @RequestParam String etat) {
+        log.debug("REST request to get Traduction : {}", id);
+        Optional<TraductionDTO> traductionDTO = traductionService.validation(id, etat);
+        return ResponseUtil.wrapOrNotFound(traductionDTO);
+    }
 }

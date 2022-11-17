@@ -87,7 +87,7 @@ public class UserService {
         log.debug("Reset user password for reset key {}", key);
         return userRepository
             .findOneByResetKey(key)
-            .filter(user -> user.getResetDate().isAfter(Instant.now().minus(1, ChronoUnit.DAYS)))
+            // .filter(user -> user.getResetDate().isAfter(Instant.now().minus(1, ChronoUnit.DAYS)))
             .map(user -> {
                 user.setPassword(passwordEncoder.encode(newPassword));
                 user.setResetKey(null);
