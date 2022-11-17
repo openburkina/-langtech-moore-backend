@@ -255,7 +255,6 @@ public class Utilisateur implements Serializable {
         return getClass().hashCode();
     }
 
-    // prettier-ignore
     @Override
     public String toString() {
         return "Utilisateur{" +
