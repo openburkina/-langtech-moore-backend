@@ -111,6 +111,11 @@ public class ProfilService {
         return profilMapper.toDto(profil);
     }
 
+    public ProfilDTO updateProfil(ProfilDTO profilDTO) {
+        log.debug("Request to save Profil : {}", profilDTO);
+        return save(profilDTO);
+    }
+
     /**
      * Partially update a profil.
      *

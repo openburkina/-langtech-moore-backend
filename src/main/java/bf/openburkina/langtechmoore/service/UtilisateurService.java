@@ -5,17 +5,17 @@ import bf.openburkina.langtechmoore.domain.Profil;
 import bf.openburkina.langtechmoore.domain.User;
 import bf.openburkina.langtechmoore.domain.Utilisateur;
 import bf.openburkina.langtechmoore.domain.enumeration.TypeUtilisateur;
+import bf.openburkina.langtechmoore.repository.AuthorityRepository;
 import bf.openburkina.langtechmoore.repository.ProfilRepository;
 import bf.openburkina.langtechmoore.repository.UserRepository;
 import bf.openburkina.langtechmoore.repository.UtilisateurRepository;
+import bf.openburkina.langtechmoore.service.dto.UserDTO;
 import bf.openburkina.langtechmoore.service.dto.UtilisateurDTO;
+import bf.openburkina.langtechmoore.service.mapper.UserMapper;
 import bf.openburkina.langtechmoore.service.mapper.UtilisateurMapper;
 
 import java.time.Instant;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -46,12 +46,18 @@ public class UtilisateurService {
 
     private final UserRepository userRepository;
 
-    public UtilisateurService(UtilisateurRepository utilisateurRepository, UtilisateurMapper utilisateurMapper, ProfilRepository profilRepository, PasswordEncoder passwordEncoder, UserRepository userRepository) {
+    private final UserMapper userMapper;
+
+    private final AuthorityRepository authorityRepository;
+
+    public UtilisateurService(UtilisateurRepository utilisateurRepository, UtilisateurMapper utilisateurMapper, ProfilRepository profilRepository, PasswordEncoder passwordEncoder, UserRepository userRepository, UserMapper userMapper, AuthorityRepository authorityRepository) {
         this.utilisateurRepository = utilisateurRepository;
         this.utilisateurMapper = utilisateurMapper;
         this.profilRepository = profilRepository;
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
+        this.userMapper = userMapper;
+        this.authorityRepository = authorityRepository;
     }
 
     /**
@@ -63,16 +69,23 @@ public class UtilisateurService {
     public UtilisateurDTO save(UtilisateurDTO utilisateurDTO) {
         log.debug("Request to save Utilisateur : {}", utilisateurDTO);
         User user = new User();
+        String encryptedPassword;
         Utilisateur utilisateur = utilisateurMapper.toEntity(utilisateurDTO);
         System.out.println("========================= "+utilisateurDTO.getProfil());
         Profil profil = profilRepository.findOneWithEagerRelationships(utilisateurDTO.getProfil().getId());
         user.setLogin(utilisateurDTO.getEmail());
         user.setEmail(utilisateurDTO.getEmail());
-        String encryptedPassword = passwordEncoder.encode(RandomUtil.generatePassword());
+       // String encryptedPassword = passwordEncoder.encode(RandomUtil.generatePassword());
+        if (utilisateurDTO.getPassword()!=null && utilisateurDTO.getPassword().trim().length()>0){
+            encryptedPassword = passwordEncoder.encode(utilisateurDTO.getPassword());
+        }else {
+            encryptedPassword = passwordEncoder.encode("langtech");
+        }
         user.setPassword(encryptedPassword);
         user.setResetKey(RandomUtil.generateResetKey());
         user.setResetDate(Instant.now());
-        user.setActivated(false);
+        user.setActivated(true);
+        user.setDefaultPassord(false);
         user.setLastName(utilisateurDTO.getNom());
         user.setFirstName(utilisateurDTO.getPrenom());
         if (profil != null) {
@@ -124,6 +137,31 @@ public class UtilisateurService {
         utilisateur = utilisateurRepository.save(utilisateur);
         return utilisateurMapper.toDto(utilisateur);
     }
+
+    public UtilisateurDTO updateUser(UtilisateurDTO utilisateurDTO) {
+        log.debug("Request to updated Utilisateur : {}", utilisateurDTO);
+        Utilisateur utilisateur = utilisateurMapper.toEntity(utilisateurDTO);
+        UserDTO userDTO;
+        User user;
+        Utilisateur ut = utilisateurRepository.getReferenceById(utilisateurDTO.getId());
+        user = ut.getUser();
+        userDTO = userMapper.userToUserDTO(user);
+        Set<Authority> managedAuthorities = user.getAuthorities();
+        managedAuthorities.clear();
+        userDTO.getAuthorities().stream().map(authorityRepository::getReferenceById).forEach(managedAuthorities::add);
+        if (utilisateur.getProfil() != null) {
+            utilisateur.setProfil(profilRepository.findById(utilisateur.getProfil().getId()).get());
+        }
+        user.setLogin(utilisateurDTO.getEmail());
+        user.setEmail(utilisateurDTO.getEmail());
+        user.setLastName(utilisateurDTO.getNom());
+        user.setFirstName(utilisateurDTO.getPrenom());
+        user = userRepository.save(user);
+        utilisateur.setUser(user);
+        utilisateur = utilisateurRepository.save(utilisateur);
+        return utilisateurMapper.toDto(utilisateur);
+    }
+
 
     /**
      * Partially update a utilisateur.

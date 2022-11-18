@@ -95,7 +95,7 @@ public class UtilisateurResource {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
-        UtilisateurDTO result = utilisateurService.update(utilisateurDTO);
+        UtilisateurDTO result = utilisateurService.updateUser(utilisateurDTO);
         return ResponseEntity
             .ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, utilisateurDTO.getId().toString()))

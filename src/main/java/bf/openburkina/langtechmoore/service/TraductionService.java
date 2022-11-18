@@ -1,18 +1,21 @@
 package bf.openburkina.langtechmoore.service;
 
 import bf.openburkina.langtechmoore.domain.Traduction;
+import bf.openburkina.langtechmoore.domain.Utilisateur;
+import bf.openburkina.langtechmoore.domain.enumeration.Etat;
 import bf.openburkina.langtechmoore.domain.enumeration.TypeTraduction;
 import bf.openburkina.langtechmoore.repository.TraductionRepository;
+import bf.openburkina.langtechmoore.repository.UtilisateurRepository;
 import bf.openburkina.langtechmoore.service.dto.TraductionDTO;
 import bf.openburkina.langtechmoore.service.mapper.TraductionMapper;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Objects;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.slf4j.Logger;
@@ -20,11 +23,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import tech.jhipster.web.util.HeaderUtil;
 
 /**
  * Service Implementation for managing {@link Traduction}.
@@ -47,9 +48,13 @@ public class TraductionService {
 
     private final TraductionMapper traductionMapper;
 
-    public TraductionService(TraductionRepository traductionRepository, TraductionMapper traductionMapper) {
+    private final UtilisateurRepository utilisateurRepository;
+
+
+    public TraductionService(TraductionRepository traductionRepository, TraductionMapper traductionMapper, UtilisateurRepository utilisateurRepository) {
         this.traductionRepository = traductionRepository;
         this.traductionMapper = traductionMapper;
+        this.utilisateurRepository = utilisateurRepository;
     }
 
     /**
@@ -134,6 +139,18 @@ public class TraductionService {
     public Optional<TraductionDTO> findOne(Long id) {
         log.debug("Request to get Traduction : {}", id);
         return traductionRepository.findById(id).map(traductionMapper::toDto);
+    }
+
+    /**
+     * Get one traduction by id.
+     *
+     * @param id the id of the entity.
+     * @return the entity.
+     */
+    @Transactional(readOnly = true)
+    public List<TraductionDTO> getTraductionByContributeur(Long id) {
+        log.debug("Request to get Traduction : {}", id);
+        return traductionRepository.findByUtilisateurId(id).stream().map(traductionMapper::toDto).collect(Collectors.toList());
     }
 
     /**
@@ -251,7 +268,7 @@ public class TraductionService {
                 File img = new File(traductionFolder);
                 log.debug("is file------"+img+"et bool"+img.isFile());
                 // bytes = FileUtils.readFileToByteArray(img);
-                 bytes = Files.readAllBytes(Path.of(img.getPath()));
+                  bytes = Files.readAllBytes(Path.of(img.getPath()));
                 traductionDTO.setContenuAudio(bytes);
             }
 
@@ -290,5 +307,30 @@ public class TraductionService {
             ft="png";
         }
         return ft;
+    }
+
+    /**
+     * Get one traduction by id.
+     *
+     * @param id the id of the entity.
+     * @return the entity.
+     */
+    @Transactional(readOnly = true)
+    public Optional<TraductionDTO> validation(Long id, String etat) {
+        log.debug("Request to get Traduction : {}", id);
+
+        Traduction t = traductionRepository.findById(id).get();
+        Utilisateur u = t.getUtilisateur();
+
+        t.setEtat(Etat.valueOf(etat));
+
+        List<Traduction> tt = traductionRepository.findTraductionByEtatAndUtilisateurIdAndSourceDonneeId(Etat.VALIDER, u.getId(), t.getSourceDonnee().getId());
+        if (tt.isEmpty()){
+            u.setPointFidelite(u.getPointFidelite() + 1);
+        }
+        traductionRepository.save(t);
+        utilisateurRepository.save(u);
+
+        return Optional.ofNullable(traductionMapper.toDto(t));
     }
 }

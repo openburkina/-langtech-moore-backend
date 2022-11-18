@@ -9,6 +9,9 @@ import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+import java.util.Optional;
+
 /**
  * Spring Data JPA repository for the Traduction entity.
  */
@@ -35,4 +38,8 @@ public interface TraductionRepository extends JpaRepository<Traduction, Long> {
         @Param("sourceDonneeId") Long sourceDonneeId,
         @Param("utilisateurId") Long utilisateurId,
         @Param("langueId") Long langueId, Pageable pageable);
+
+    List<Traduction> findTraductionByEtatAndUtilisateurIdAndSourceDonneeId(Etat etat, Long utilisateurId, Long sourceDonneeId);
+
+    List<Traduction>findByUtilisateurId(Long utilisateurId);
 }

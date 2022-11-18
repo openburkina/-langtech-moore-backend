@@ -95,7 +95,7 @@ public class ProfilResource {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
-        ProfilDTO result = profilService.update(profilDTO);
+        ProfilDTO result = profilService.updateProfil(profilDTO);
         return ResponseEntity
             .ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, profilDTO.getId().toString()))

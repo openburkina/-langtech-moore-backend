@@ -1,6 +1,9 @@
 package bf.openburkina.langtechmoore.web.rest;
 
+import bf.openburkina.langtechmoore.domain.Authority;
+import bf.openburkina.langtechmoore.domain.Profil;
 import bf.openburkina.langtechmoore.domain.Utilisateur;
+import bf.openburkina.langtechmoore.repository.ProfilRepository;
 import bf.openburkina.langtechmoore.repository.UtilisateurRepository;
 import bf.openburkina.langtechmoore.security.jwt.JWTFilter;
 import bf.openburkina.langtechmoore.security.jwt.TokenProvider;
@@ -22,6 +25,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Controller to authenticate users.
@@ -40,11 +44,14 @@ public class UserJWTController {
 
     private final UtilisateurRepository utilisateurRepository;
 
-    public UserJWTController(TokenProvider tokenProvider, AuthenticationManagerBuilder authenticationManagerBuilder, UserService userService, UtilisateurRepository utilisateurRepository) {
+    private final ProfilRepository profilRepository;
+
+    public UserJWTController(TokenProvider tokenProvider, AuthenticationManagerBuilder authenticationManagerBuilder, UserService userService, UtilisateurRepository utilisateurRepository, ProfilRepository profilRepository) {
         this.tokenProvider = tokenProvider;
         this.authenticationManagerBuilder = authenticationManagerBuilder;
         this.userService = userService;
         this.utilisateurRepository = utilisateurRepository;
+        this.profilRepository = profilRepository;
     }
 
     @PostMapping("/authenticate")
@@ -65,6 +72,10 @@ public class UserJWTController {
             .orElseThrow(() -> new AccountResourceException("User could not be found"));
         Optional<Utilisateur> utilisateur = utilisateurRepository.findByUserId(adminUserDTO.getId());
         if (utilisateur.isPresent()) {
+            if (utilisateur.get().getProfil()!=null){
+                Profil profil = profilRepository.findOneWithEagerRelationships(utilisateur.get().getProfil().getId());
+                utilisateur.get().getProfil().setRoles(profil.getRoles().stream().collect(Collectors.toSet()));
+            }
             log.debug(utilisateur.get().toString());
         }
         return new ResponseEntity<>(new JWTToken(jwt,utilisateur.get()), httpHeaders, HttpStatus.OK);
