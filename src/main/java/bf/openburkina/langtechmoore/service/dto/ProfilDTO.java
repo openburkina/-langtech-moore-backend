@@ -1,8 +1,12 @@
 package bf.openburkina.langtechmoore.service.dto;
 
+import bf.openburkina.langtechmoore.domain.Authority;
+import bf.openburkina.langtechmoore.domain.Profil;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 import javax.validation.constraints.*;
 
 /**
@@ -17,6 +21,36 @@ public class ProfilDTO implements Serializable {
     private String libelle;
 
     private String description;
+
+    private Set<String> authorities;
+
+    private Boolean profilsChange;
+
+    public ProfilDTO() {}
+
+    public ProfilDTO(Profil profil) {
+        this(
+            profil.getId(),
+            profil.getLibelle(),
+            profil.getDescription(),
+            profil.getRoles().stream().map(Authority::getName).collect(Collectors.toSet())
+        );
+    }
+
+    public ProfilDTO(Long id, @NotNull String libelle, String description, Set<String> authorities) {
+        this.id = id;
+        this.libelle = libelle;
+        this.description = description;
+        this.authorities = authorities;
+    }
+
+    public Boolean getProfilsChange() {
+        return profilsChange;
+    }
+
+    public void setProfilsChange(Boolean profilsChange) {
+        this.profilsChange = profilsChange;
+    }
 
     public Long getId() {
         return id;
@@ -36,6 +70,14 @@ public class ProfilDTO implements Serializable {
 
     public String getDescription() {
         return description;
+    }
+
+    public Set<String> getAuthorities() {
+        return authorities;
+    }
+
+    public void setAuthorities(Set<String> authorities) {
+        this.authorities = authorities;
     }
 
     public void setDescription(String description) {
@@ -63,13 +105,14 @@ public class ProfilDTO implements Serializable {
         return Objects.hash(this.id);
     }
 
-    // prettier-ignore
     @Override
     public String toString() {
         return "ProfilDTO{" +
-            "id=" + getId() +
-            ", libelle='" + getLibelle() + "'" +
-            ", description='" + getDescription() + "'" +
-            "}";
+            "id=" + id +
+            ", libelle='" + libelle + '\'' +
+            ", description='" + description + '\'' +
+            ", authorities=" + authorities +
+            ", profilsChange=" + profilsChange +
+            '}';
     }
 }

@@ -1,6 +1,9 @@
 package bf.openburkina.langtechmoore.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
@@ -36,6 +39,15 @@ public class Profil implements Serializable {
     @JsonIgnoreProperties(value = { "sourceDonnees", "traductions", "profil" }, allowSetters = true)
     private Set<Utilisateur> utilisateurs = new HashSet<>();
 
+    @JsonIgnore
+    @ManyToMany
+    @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+    @JoinTable(
+        name = "profil_role",
+        joinColumns = @JoinColumn(name = "profils_id", referencedColumnName = "id"),
+        inverseJoinColumns = @JoinColumn(name = "authority_name", referencedColumnName = "name")
+    )
+    private Set<Authority> roles = new HashSet<>();
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
     public Long getId() {
@@ -121,19 +133,28 @@ public class Profil implements Serializable {
         return id != null && id.equals(((Profil) o).id);
     }
 
+    public Set<Authority> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<Authority> roles) {
+        this.roles = roles;
+    }
+
     @Override
     public int hashCode() {
         // see https://vladmihalcea.com/how-to-implement-equals-and-hashcode-using-the-jpa-entity-identifier/
         return getClass().hashCode();
     }
 
-    // prettier-ignore
     @Override
     public String toString() {
         return "Profil{" +
-            "id=" + getId() +
-            ", libelle='" + getLibelle() + "'" +
-            ", description='" + getDescription() + "'" +
-            "}";
+            "id=" + id +
+            ", libelle='" + libelle + '\'' +
+            ", description='" + description + '\'' +
+            ", utilisateurs=" + utilisateurs +
+            ", roles=" + roles +
+            '}';
     }
 }

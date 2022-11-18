@@ -26,7 +26,7 @@ public class UtilisateurDTO implements Serializable {
 
     private String password;
 
-    @NotNull
+
     private TypeUtilisateur typeUtilisateur;
 
     private Integer pointFidelite;
