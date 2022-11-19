@@ -39,5 +39,5 @@ public interface TraductionRepository extends JpaRepository<Traduction, Long> {
         @Param("utilisateurId") Long utilisateurId,
         @Param("langueId") Long langueId, Pageable pageable);
 
-    List<Traduction> findTraductionByEtatAndUtilisateurIdAndSourceDonneeId(Etat etat, Long utilisateurId, Long sourceDonneeId);
+    List<Traduction> findTraductionByEtatAndUtilisateurIdAndSourceDonneeIdAndType(Etat etat, Long utilisateurId, Long sourceDonneeId, TypeTraduction typeTraduction);
 }
