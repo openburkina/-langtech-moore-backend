@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,4 +43,8 @@ public interface TraductionRepository extends JpaRepository<Traduction, Long> {
     List<Traduction> findTraductionByEtatAndUtilisateurIdAndSourceDonneeId(Etat etat, Long utilisateurId, Long sourceDonneeId);
 
     List<Traduction>findByUtilisateurId(Long utilisateurId);
+
+    @Query(value = "select count(*) from traduction t where (:typeSource is null or t.type=:typeSource) and " +
+        "(:etat is null or t.etat=:etat) and (t.created_date between :debut and :fin ) and  t.utilisateur_id=:utilisateur",nativeQuery = true)
+    Integer countContribution(@Param("utilisateur") Long utilisateur,@Param("typeSource") String typeSource, @Param("etat") String etat, @Param("debut") ZonedDateTime debut, @Param("fin") ZonedDateTime fin);
 }

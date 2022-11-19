@@ -3,7 +3,9 @@ package bf.openburkina.langtechmoore.web.rest;
 import bf.openburkina.langtechmoore.domain.Traduction;
 import bf.openburkina.langtechmoore.repository.TraductionRepository;
 import bf.openburkina.langtechmoore.service.TraductionService;
+import bf.openburkina.langtechmoore.service.dto.AllContributionDTO;
 import bf.openburkina.langtechmoore.service.dto.TraductionDTO;
+import bf.openburkina.langtechmoore.service.dto.XSourceDTO;
 import bf.openburkina.langtechmoore.web.rest.errors.BadRequestAlertException;
 
 import java.io.File;
@@ -33,6 +35,9 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import tech.jhipster.web.util.HeaderUtil;
 import tech.jhipster.web.util.PaginationUtil;
 import tech.jhipster.web.util.ResponseUtil;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 /**
  * REST controller for managing {@link bf.openburkina.langtechmoore.domain.Traduction}.
@@ -236,4 +241,10 @@ public class TraductionResource {
         Optional<TraductionDTO> traductionDTO = traductionService.validation(id, etat);
         return ResponseUtil.wrapOrNotFound(traductionDTO);
     }
+
+    @GetMapping("/getStatistique")
+    public List<AllContributionDTO> getStatistique(@RequestBody XSourceDTO xSourceDTO){
+        return traductionService.getStatContribution(xSourceDTO);
+    }
+
 }
