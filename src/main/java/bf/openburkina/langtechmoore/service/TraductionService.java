@@ -14,6 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.SystemUtils;
@@ -138,6 +139,18 @@ public class TraductionService {
     public Optional<TraductionDTO> findOne(Long id) {
         log.debug("Request to get Traduction : {}", id);
         return traductionRepository.findById(id).map(traductionMapper::toDto);
+    }
+
+    /**
+     * Get one traduction by id.
+     *
+     * @param id the id of the entity.
+     * @return the entity.
+     */
+    @Transactional(readOnly = true)
+    public List<TraductionDTO> getTraductionByContributeur(Long id) {
+        log.debug("Request to get Traduction : {}", id);
+        return traductionRepository.findByUtilisateurId(id).stream().map(traductionMapper::toDto).collect(Collectors.toList());
     }
 
     /**
