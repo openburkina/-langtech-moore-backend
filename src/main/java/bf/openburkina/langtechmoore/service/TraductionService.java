@@ -318,7 +318,7 @@ public class TraductionService {
      * @param id the id of the entity.
      * @return the entity.
      */
-    @Transactional(readOnly = true)
+    @Transactional()
     public Optional<TraductionDTO> validation(Long id, String etat) {
         log.debug("Request to get Traduction : {}", id);
 
@@ -327,7 +327,7 @@ public class TraductionService {
 
         t.setEtat(Etat.valueOf(etat));
 
-        List<Traduction> tt = traductionRepository.findTraductionByEtatAndUtilisateurIdAndSourceDonneeId(Etat.VALIDER, u.getId(), t.getSourceDonnee().getId());
+        List<Traduction> tt = traductionRepository.findTraductionByEtatAndUtilisateurIdAndSourceDonneeIdAndType(Etat.VALIDER, u.getId(), t.getSourceDonnee().getId(), t.getType());
         if (tt.isEmpty()){
             u.setPointFidelite(u.getPointFidelite() + 1);
         }
