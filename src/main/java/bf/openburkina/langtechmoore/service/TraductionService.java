@@ -6,12 +6,15 @@ import bf.openburkina.langtechmoore.domain.enumeration.Etat;
 import bf.openburkina.langtechmoore.domain.enumeration.TypeTraduction;
 import bf.openburkina.langtechmoore.repository.TraductionRepository;
 import bf.openburkina.langtechmoore.repository.UtilisateurRepository;
+import bf.openburkina.langtechmoore.service.dto.AllContributionDTO;
 import bf.openburkina.langtechmoore.service.dto.TraductionDTO;
+import bf.openburkina.langtechmoore.service.dto.XSourceDTO;
 import bf.openburkina.langtechmoore.service.mapper.TraductionMapper;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -332,5 +335,20 @@ public class TraductionService {
         utilisateurRepository.save(u);
 
         return Optional.ofNullable(traductionMapper.toDto(t));
+    }
+
+    public List<AllContributionDTO> getStatContribution(XSourceDTO xSourceDTO){
+        List<AllContributionDTO> allContribution=new ArrayList<>();
+        List<Utilisateur> contributeur= utilisateurRepository.findAll();
+        contributeur.forEach(utilisateur -> {
+            AllContributionDTO contribution=new AllContributionDTO();
+            contribution.setUtilisateur(utilisateur.getNom()+" "+utilisateur.getPrenom()+" "+utilisateur.getTelephone());
+            contribution.setTypeTraduction(xSourceDTO.getTypeTraduction());
+            Integer point=traductionRepository.countContribution(utilisateur.getId(),xSourceDTO.getTypeTraduction(),Etat.VALIDER.name(),xSourceDTO.getDebut(),xSourceDTO.getFin());
+            contribution.setPointFedelite(point);
+            allContribution.add(contribution);
+        });
+        return allContribution;
+
     }
 }
