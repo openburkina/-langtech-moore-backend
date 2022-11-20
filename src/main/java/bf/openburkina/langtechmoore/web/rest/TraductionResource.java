@@ -242,7 +242,7 @@ public class TraductionResource {
         return ResponseUtil.wrapOrNotFound(traductionDTO);
     }
 
-    @GetMapping("/getStatistique")
+    @PostMapping("/getStatistique")
     public List<AllContributionDTO> getStatistique(@RequestBody XSourceDTO xSourceDTO){
         return traductionService.getStatContribution(xSourceDTO);
     }
