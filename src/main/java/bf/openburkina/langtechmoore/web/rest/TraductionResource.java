@@ -232,19 +232,18 @@ public class TraductionResource {
     /**
      * {@code GET  /traductions/:id} : get the "id" traduction.
      *
-     * @param id the id of the traductionDTO to retrieve.
+     * @param t the traductionDTO to retrieve.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the traductionDTO, or with status {@code 404 (Not Found)}.
      */
-    @GetMapping("/traductions/validation/{id}")
-    public ResponseEntity<TraductionDTO> validation(@PathVariable Long id, @RequestParam String etat) {
-        log.debug("REST request to get Traduction : {}, {}", id, etat);
-        Optional<TraductionDTO> traductionDTO = traductionService.validation(id, etat);
+    @PostMapping("/traductions/validation")
+    public ResponseEntity<TraductionDTO> validation(@RequestBody TraductionDTO t) {
+        log.debug("REST request to get Traduction : {}", t.getId());
+        Optional<TraductionDTO> traductionDTO = traductionService.validation(t.getId(), t.getEtat().toString());
         return ResponseUtil.wrapOrNotFound(traductionDTO);
     }
 
     @PostMapping("/getStatistique")
     public List<AllContributionDTO> getStatistique(@RequestBody XSourceDTO xSourceDTO){
-        log.debug("STATISTIQUE CRITERIA ===> {}", xSourceDTO);
         return traductionService.getStatContribution(xSourceDTO);
     }
 
