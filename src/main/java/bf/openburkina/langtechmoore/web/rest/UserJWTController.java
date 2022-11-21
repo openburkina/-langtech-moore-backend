@@ -71,12 +71,14 @@ public class UserJWTController {
             .map(UserDTO::new)
             .orElseThrow(() -> new AccountResourceException("User could not be found"));
         Optional<Utilisateur> utilisateur = utilisateurRepository.findByUserId(adminUserDTO.getId());
+        log.debug("utilisateur--------"+utilisateur.toString());
+
         if (utilisateur.isPresent()) {
             if (utilisateur.get().getProfil()!=null){
                 Profil profil = profilRepository.findOneWithEagerRelationships(utilisateur.get().getProfil().getId());
                 utilisateur.get().getProfil().setRoles(profil.getRoles().stream().collect(Collectors.toSet()));
             }
-            log.debug(utilisateur.get().toString());
+            log.debug("user--------"+utilisateur.get().toString());
         }
         return new ResponseEntity<>(new JWTToken(jwt,utilisateur.get()), httpHeaders, HttpStatus.OK);
     }

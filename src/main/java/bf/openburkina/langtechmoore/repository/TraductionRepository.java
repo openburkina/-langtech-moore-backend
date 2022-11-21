@@ -1,5 +1,6 @@
 package bf.openburkina.langtechmoore.repository;
 
+import bf.openburkina.langtechmoore.domain.SourceDonnee;
 import bf.openburkina.langtechmoore.domain.Traduction;
 import bf.openburkina.langtechmoore.domain.enumeration.Etat;
 import bf.openburkina.langtechmoore.domain.enumeration.TypeTraduction;
@@ -9,6 +10,7 @@ import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,7 +41,12 @@ public interface TraductionRepository extends JpaRepository<Traduction, Long> {
         @Param("utilisateurId") Long utilisateurId,
         @Param("langueId") Long langueId, Pageable pageable);
 
-    List<Traduction> findTraductionByEtatAndUtilisateurIdAndSourceDonneeId(Etat etat, Long utilisateurId, Long sourceDonneeId);
-
     List<Traduction>findByUtilisateurId(Long utilisateurId);
+
+    @Query(value = "select count(*) from traduction t where (:typeSource is null or t.type=:typeSource) and " +
+        "(:etat is null or t.etat=:etat) and (t.created_date between :debut and :fin ) and  t.utilisateur_id=:utilisateur",nativeQuery = true)
+    Integer countContribution(@Param("utilisateur") Long utilisateur, @Param("typeSource") String typeSource, @Param("etat") String etat, @Param("debut") ZonedDateTime debut, @Param("fin") ZonedDateTime fin);
+
+    List<Traduction> findTraductionByEtatAndUtilisateurIdAndSourceDonneeIdAndType(Etat etat, Long utilisateurId, Long sourceDonneeId, TypeTraduction typeTraduction);
+    List<Traduction> findTraductionBySourceDonnee(SourceDonnee sourceDonnee);
 }

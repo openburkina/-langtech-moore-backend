@@ -3,7 +3,9 @@ package bf.openburkina.langtechmoore.web.rest;
 import bf.openburkina.langtechmoore.domain.Traduction;
 import bf.openburkina.langtechmoore.repository.TraductionRepository;
 import bf.openburkina.langtechmoore.service.TraductionService;
+import bf.openburkina.langtechmoore.service.dto.AllContributionDTO;
 import bf.openburkina.langtechmoore.service.dto.TraductionDTO;
+import bf.openburkina.langtechmoore.service.dto.XSourceDTO;
 import bf.openburkina.langtechmoore.web.rest.errors.BadRequestAlertException;
 
 import java.io.File;
@@ -33,6 +35,9 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import tech.jhipster.web.util.HeaderUtil;
 import tech.jhipster.web.util.PaginationUtil;
 import tech.jhipster.web.util.ResponseUtil;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 /**
  * REST controller for managing {@link bf.openburkina.langtechmoore.domain.Traduction}.
@@ -227,13 +232,25 @@ public class TraductionResource {
     /**
      * {@code GET  /traductions/:id} : get the "id" traduction.
      *
-     * @param id the id of the traductionDTO to retrieve.
+     * @param t the traductionDTO to retrieve.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the traductionDTO, or with status {@code 404 (Not Found)}.
      */
-    @PostMapping("/traductions/{id}")
-    public ResponseEntity<TraductionDTO> validation(@PathVariable Long id, @RequestParam String etat) {
-        log.debug("REST request to get Traduction : {}", id);
-        Optional<TraductionDTO> traductionDTO = traductionService.validation(id, etat);
+    @PostMapping("/traductions/validation")
+    public ResponseEntity<TraductionDTO> validation(@RequestBody TraductionDTO t) {
+        log.debug("REST request to get Traduction : {}", t.getId());
+        Optional<TraductionDTO> traductionDTO = traductionService.validation(t.getId(), t.getEtat().toString());
         return ResponseUtil.wrapOrNotFound(traductionDTO);
     }
+
+    @PostMapping("/getStatistique")
+    public List<AllContributionDTO> getStatistique(@RequestBody XSourceDTO xSourceDTO){
+        return traductionService.getStatContribution(xSourceDTO);
+    }
+
+    @GetMapping("/traductions-by-source/{srcId}")
+    public ResponseEntity<List<TraductionDTO>> getAllTraductions(@PathVariable Long srcId) {
+        log.debug("REST request to get a page of Traductions");
+        return ResponseEntity.ok().body(traductionService.getTraductionsBySource(srcId));
+    }
+
 }
