@@ -242,9 +242,15 @@ public class TraductionResource {
         return ResponseUtil.wrapOrNotFound(traductionDTO);
     }
 
-    @GetMapping("/getStatistique")
+    @PostMapping("/getStatistique")
     public List<AllContributionDTO> getStatistique(@RequestBody XSourceDTO xSourceDTO){
         return traductionService.getStatContribution(xSourceDTO);
+    }
+
+    @GetMapping("/traductions-by-source/{srcId}")
+    public ResponseEntity<List<TraductionDTO>> getAllTraductions(@PathVariable Long srcId) {
+        log.debug("REST request to get a page of Traductions");
+        return ResponseEntity.ok().body(traductionService.getTraductionsBySource(srcId));
     }
 
 }
