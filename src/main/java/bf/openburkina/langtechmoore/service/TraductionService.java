@@ -325,12 +325,13 @@ public class TraductionService {
         Traduction t = traductionRepository.findById(id).get();
         Utilisateur u = t.getUtilisateur();
 
-        t.setEtat(Etat.valueOf(etat));
-
         List<Traduction> tt = traductionRepository.findTraductionByEtatAndUtilisateurIdAndSourceDonneeIdAndType(Etat.VALIDER, u.getId(), t.getSourceDonnee().getId(), t.getType());
+
         if (tt.isEmpty()){
             u.setPointFidelite(u.getPointFidelite() + 1);
         }
+
+        t.setEtat(Etat.valueOf(etat));
         traductionRepository.save(t);
         utilisateurRepository.save(u);
 
