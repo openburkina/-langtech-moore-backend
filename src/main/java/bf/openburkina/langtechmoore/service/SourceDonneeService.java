@@ -62,7 +62,7 @@ public class SourceDonneeService {
         //SourceDonnee sourceDonnee = sourceDonneeMapper.toEntity(sourceDonneeDTO);
         SourceDonnee sourceDonnee = new SourceDonnee();
         sourceDonnee.setLibelle(sourceDonneeDTO.getLibelle());
-        sourceDonnee = sourceDonneeRepository.save(sourceDonnee);
+        isExist(sourceDonnee);
         return sourceDonneeMapper.toDto(sourceDonnee);
     }
 
@@ -189,7 +189,7 @@ public class SourceDonneeService {
 //
 //                                return m;
 //                            }
-                            sourceDonneeRepository.save(s);
+                            isExist(s);
                         }
                     }
                 }
@@ -201,4 +201,9 @@ public class SourceDonneeService {
         return m;
     }
 
+    public void isExist(SourceDonnee s){
+        if (!sourceDonneeRepository.findByLibelle(s.getLibelle()).isPresent()){
+            sourceDonneeRepository.save(s);
+        }
+    }
 }
