@@ -57,13 +57,14 @@ public class SourceDonneeService {
      * @param sourceDonneeDTO the entity to save.
      * @return the persisted entity.
      */
-    public SourceDonneeDTO save(SourceDonneeDTO sourceDonneeDTO) {
+    public MResponse save(SourceDonneeDTO sourceDonneeDTO) {
         log.debug("Request to save SourceDonnee : {}", sourceDonneeDTO);
-        //SourceDonnee sourceDonnee = sourceDonneeMapper.toEntity(sourceDonneeDTO);
+        MResponse m = new MResponse();
+        m.setCode("0");
         SourceDonnee sourceDonnee = new SourceDonnee();
         sourceDonnee.setLibelle(sourceDonneeDTO.getLibelle());
-        isExist(sourceDonnee);
-        return sourceDonneeMapper.toDto(sourceDonnee);
+
+        return isExist(sourceDonnee, m);
     }
 
     /**
@@ -162,6 +163,7 @@ public class SourceDonneeService {
         MResponse m = new MResponse();
         m.setCode("0");
 
+
         for (int i = 0; i < numberOfSheet; i++) {
             Sheet sheet = workbook.getSheetAt(i);
             int numberOfColumns = sheet.getRow(0).getPhysicalNumberOfCells();
@@ -189,7 +191,7 @@ public class SourceDonneeService {
 //
 //                                return m;
 //                            }
-                            isExist(s);
+                            isExist(s, m);
                         }
                     }
                 }
@@ -201,9 +203,13 @@ public class SourceDonneeService {
         return m;
     }
 
-    public void isExist(SourceDonnee s){
+    public MResponse isExist(SourceDonnee s, MResponse m){
         if (!sourceDonneeRepository.findByLibelle(s.getLibelle()).isPresent()){
             sourceDonneeRepository.save(s);
+        } else {
+            m.setCode("-1");
+            m.setMsg("La source de donnee : " + s.getLibelle() + " existe");
         }
+        return m;
     }
 }
