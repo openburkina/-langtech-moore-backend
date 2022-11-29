@@ -1,5 +1,6 @@
 package bf.openburkina.langtechmoore.repository;
 
+import bf.openburkina.langtechmoore.domain.SourceDonnee;
 import bf.openburkina.langtechmoore.domain.Traduction;
 import bf.openburkina.langtechmoore.domain.enumeration.Etat;
 import bf.openburkina.langtechmoore.domain.enumeration.TypeTraduction;
@@ -47,4 +48,5 @@ public interface TraductionRepository extends JpaRepository<Traduction, Long> {
     Integer countContribution(@Param("utilisateur") Long utilisateur, @Param("typeSource") String typeSource, @Param("etat") String etat, @Param("debut") ZonedDateTime debut, @Param("fin") ZonedDateTime fin);
 
     List<Traduction> findTraductionByEtatAndUtilisateurIdAndSourceDonneeIdAndType(Etat etat, Long utilisateurId, Long sourceDonneeId, TypeTraduction typeTraduction);
+    List<Traduction> findTraductionBySourceDonnee(SourceDonnee sourceDonnee);
 }

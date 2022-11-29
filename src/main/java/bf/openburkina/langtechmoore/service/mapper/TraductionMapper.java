@@ -18,6 +18,7 @@ public interface TraductionMapper extends EntityMapper<TraductionDTO, Traduction
     @Mapping(target = "utilisateur", source = "utilisateur", qualifiedByName = "utilisateurId")
     @Mapping(target = "sourceDonnee", source = "sourceDonnee", qualifiedByName = "sourceDonneeId")
     @Mapping(target = "langue", source = "langue", qualifiedByName = "langueId")
+    // @Mapping(target = "createdDate", source = "createdDate")
     TraductionDTO toDto(Traduction s);
 
     @Named("utilisateurId")

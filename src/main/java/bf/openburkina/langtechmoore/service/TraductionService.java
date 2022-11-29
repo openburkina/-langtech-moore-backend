@@ -1,9 +1,11 @@
 package bf.openburkina.langtechmoore.service;
 
+import bf.openburkina.langtechmoore.domain.SourceDonnee;
 import bf.openburkina.langtechmoore.domain.Traduction;
 import bf.openburkina.langtechmoore.domain.Utilisateur;
 import bf.openburkina.langtechmoore.domain.enumeration.Etat;
 import bf.openburkina.langtechmoore.domain.enumeration.TypeTraduction;
+import bf.openburkina.langtechmoore.repository.SourceDonneeRepository;
 import bf.openburkina.langtechmoore.repository.TraductionRepository;
 import bf.openburkina.langtechmoore.repository.UtilisateurRepository;
 import bf.openburkina.langtechmoore.service.dto.AllContributionDTO;
@@ -26,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -53,11 +56,14 @@ public class TraductionService {
 
     private final UtilisateurRepository utilisateurRepository;
 
+    private final SourceDonneeRepository sourceDonneeRepository;
 
-    public TraductionService(TraductionRepository traductionRepository, TraductionMapper traductionMapper, UtilisateurRepository utilisateurRepository) {
+
+    public TraductionService(TraductionRepository traductionRepository, TraductionMapper traductionMapper, UtilisateurRepository utilisateurRepository, SourceDonneeRepository sourceDonneeRepository) {
         this.traductionRepository = traductionRepository;
         this.traductionMapper = traductionMapper;
         this.utilisateurRepository = utilisateurRepository;
+        this.sourceDonneeRepository = sourceDonneeRepository;
     }
 
     /**
@@ -335,12 +341,13 @@ public class TraductionService {
         Traduction t = traductionRepository.findById(id).get();
         Utilisateur u = t.getUtilisateur();
 
-        t.setEtat(Etat.valueOf(etat));
-
         List<Traduction> tt = traductionRepository.findTraductionByEtatAndUtilisateurIdAndSourceDonneeIdAndType(Etat.VALIDER, u.getId(), t.getSourceDonnee().getId(), t.getType());
+
         if (tt.isEmpty()){
             u.setPointFidelite(u.getPointFidelite() + 1);
         }
+
+        t.setEtat(Etat.valueOf(etat));
         traductionRepository.save(t);
         utilisateurRepository.save(u);
 
@@ -359,6 +366,12 @@ public class TraductionService {
             allContribution.add(contribution);
         });
         return allContribution;
+    }
 
+    @Transactional(readOnly = true)
+    public List<TraductionDTO> getTraductionsBySource(Long srcId) {
+        log.debug("Request to get all Traductions");
+        Optional<SourceDonnee> sourceDonnee = sourceDonneeRepository.findById(srcId);
+        return traductionRepository.findTraductionBySourceDonnee(sourceDonnee.get()).stream().map(traductionMapper::toDto).collect(Collectors.toList());
     }
 }

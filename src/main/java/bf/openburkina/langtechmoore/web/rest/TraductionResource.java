@@ -247,4 +247,10 @@ public class TraductionResource {
         return traductionService.getStatContribution(xSourceDTO);
     }
 
+    @GetMapping("/traductions-by-source/{srcId}")
+    public ResponseEntity<List<TraductionDTO>> getAllTraductions(@PathVariable Long srcId) {
+        log.debug("REST request to get a page of Traductions");
+        return ResponseEntity.ok().body(traductionService.getTraductionsBySource(srcId));
+    }
+
 }

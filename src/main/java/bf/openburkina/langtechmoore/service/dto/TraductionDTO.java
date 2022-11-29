@@ -4,6 +4,7 @@ import bf.openburkina.langtechmoore.domain.enumeration.Etat;
 import bf.openburkina.langtechmoore.domain.enumeration.TypeTraduction;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Objects;
 import javax.persistence.Lob;
@@ -45,6 +46,16 @@ public class TraductionDTO implements Serializable {
     private SourceDonneeDTO sourceDonnee;
 
     private LangueDTO langue;
+
+    private Instant createdDate;
+
+    public Instant getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(Instant createdDate) {
+        this.createdDate = createdDate;
+    }
 
     public LangueDTO getLangue() {
         return langue;
@@ -175,6 +186,7 @@ public class TraductionDTO implements Serializable {
             ", note=" + note +
             ", cheminDocument='" + cheminDocument + '\'' +
             ", etat=" + etat +
+            ", createdDate=" + createdDate +
             ", utilisateur=" + utilisateur +
             ", sourceDonnee=" + sourceDonnee +
             ", langue=" + langue +
