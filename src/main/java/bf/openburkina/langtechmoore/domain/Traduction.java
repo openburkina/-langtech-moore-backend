@@ -2,8 +2,10 @@ package bf.openburkina.langtechmoore.domain;
 
 import bf.openburkina.langtechmoore.domain.enumeration.Etat;
 import bf.openburkina.langtechmoore.domain.enumeration.TypeTraduction;
+import bf.openburkina.langtechmoore.service.dto.TraductionDTO;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.io.Serializable;
+import java.time.Instant;
 import javax.persistence.*;
 import javax.validation.constraints.*;
 
@@ -54,6 +56,12 @@ public class Traduction extends AbstractAuditingEntity implements Serializable {
     @Column(name = "etat")
     private Etat etat;
 
+    @Column(name = "motif")
+    private String motif;
+
+    @Column(name = "mois")
+    private String mois;
+
     @ManyToOne
     @JsonIgnoreProperties(value = { "sourceDonnees", "traductions", "profil" }, allowSetters = true)
     private Utilisateur utilisateur;
@@ -67,6 +75,23 @@ public class Traduction extends AbstractAuditingEntity implements Serializable {
     private Langue langue;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
+
+
+    public String getMotif() {
+        return motif;
+    }
+
+    public void setMotif(String motif) {
+        this.motif = motif;
+    }
+
+    public String getMois() {
+        return mois;
+    }
+
+    public void setMois(String mois) {
+        this.mois = mois;
+    }
 
     public Long getId() {
         return this.id;

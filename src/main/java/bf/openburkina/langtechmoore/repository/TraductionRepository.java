@@ -4,6 +4,7 @@ import bf.openburkina.langtechmoore.domain.SourceDonnee;
 import bf.openburkina.langtechmoore.domain.Traduction;
 import bf.openburkina.langtechmoore.domain.enumeration.Etat;
 import bf.openburkina.langtechmoore.domain.enumeration.TypeTraduction;
+import bf.openburkina.langtechmoore.service.dto.TraductionDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.*;
@@ -49,4 +50,7 @@ public interface TraductionRepository extends JpaRepository<Traduction, Long> {
 
     List<Traduction> findTraductionByEtatAndUtilisateurIdAndSourceDonneeIdAndType(Etat etat, Long utilisateurId, Long sourceDonneeId, TypeTraduction typeTraduction);
     List<Traduction> findTraductionBySourceDonnee(SourceDonnee sourceDonnee);
+
+    @Query("select count(*) from Traduction t where t.etat=:etat and upper(t.mois)=:mois")
+    Integer countTotalByOption(@Param("etat") Etat etat,@Param("mois") String mois);
 }
