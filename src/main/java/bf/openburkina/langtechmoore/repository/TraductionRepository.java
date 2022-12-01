@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -49,4 +50,6 @@ public interface TraductionRepository extends JpaRepository<Traduction, Long> {
 
     List<Traduction> findTraductionByEtatAndUtilisateurIdAndSourceDonneeIdAndType(Etat etat, Long utilisateurId, Long sourceDonneeId, TypeTraduction typeTraduction);
     List<Traduction> findTraductionBySourceDonnee(SourceDonnee sourceDonnee);
+
+    List<Traduction> findByCreatedDateIsBetweenAndEtat(Instant debut, Instant fin, Etat etat);
 }
