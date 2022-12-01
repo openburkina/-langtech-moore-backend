@@ -194,4 +194,9 @@ public class UtilisateurResource {
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))
             .build();
     }
+
+    @GetMapping("/utilisateurs/count-contributor")
+    public Long countContributor() {
+        return utilisateurService.countContributeur();
+    }
 }

@@ -1,18 +1,16 @@
 package bf.openburkina.langtechmoore.web.rest;
 
-import bf.openburkina.langtechmoore.domain.Traduction;
+import bf.openburkina.langtechmoore.domain.Utilisateur;
 import bf.openburkina.langtechmoore.repository.TraductionRepository;
 import bf.openburkina.langtechmoore.service.TraductionService;
-import bf.openburkina.langtechmoore.service.dto.AllContributionDTO;
-import bf.openburkina.langtechmoore.service.dto.StatMoisDTO;
-import bf.openburkina.langtechmoore.service.dto.TraductionDTO;
-import bf.openburkina.langtechmoore.service.dto.XSourceDTO;
+import bf.openburkina.langtechmoore.service.dto.*;
 import bf.openburkina.langtechmoore.web.rest.errors.BadRequestAlertException;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -20,18 +18,14 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import io.micrometer.core.annotation.Timed;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.SystemUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import tech.jhipster.web.util.HeaderUtil;
 import tech.jhipster.web.util.PaginationUtil;
@@ -258,5 +252,15 @@ public class TraductionResource {
     @GetMapping("/traductions-get-info-stats-mois")
     public List<StatMoisDTO> getInfoStatsMois() {
         return traductionService.getInfoStatsMois();
+    }
+    @GetMapping("/traductions/count-translated")
+    public Long getAllSourceDonneeTranslated() {
+        log.debug("REST request to get a page of Traductions");
+        return traductionService.countSourceDonneeTranslated();
+    }
+
+    @PostMapping("traductions/best-contributor")
+    public List<Utilisateur> getStatistique(@RequestBody DateDTO date) {
+        return traductionService.bestContributor(date.getDebut(), date.getFin().plus(1, ChronoUnit.DAYS));
     }
 }

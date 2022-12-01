@@ -23,7 +23,11 @@ import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.time.Instant;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.SystemUtils;
@@ -32,7 +36,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -356,7 +359,6 @@ public class TraductionService {
         }
 
         t.setEtat(Etat.valueOf(etat));
-        t.setMotif(motif);
         traductionRepository.save(t);
         utilisateurRepository.save(u);
 
@@ -398,5 +400,38 @@ public class TraductionService {
             ls.add(s);
         }
         return ls;
+    }
+
+    @Transactional(readOnly = true)
+    public long countSourceDonneeTranslated() {
+        log.debug("Request to get all Traductions");
+
+        return traductionRepository
+            .findAll()
+            .stream()
+            .map(t -> t.getSourceDonnee())
+            .distinct()
+            .count();
+    }
+
+    @Transactional(readOnly = true)
+    public List<Utilisateur> bestContributor(Instant debut, Instant fin) {
+        log.debug("Request to get all Traductions");
+
+        List<AbstractMap.SimpleEntry<Utilisateur, Integer>> a = new ArrayList<>();
+
+        Stream<Utilisateur> utilisateurList = traductionRepository
+            .findByCreatedDateIsBetweenAndEtat(debut,fin,Etat.VALIDER)
+            .stream()
+            .map(t -> t.getUtilisateur());
+
+        Map<Long, Long>  mapGroup = utilisateurList
+            .collect(Collectors.groupingBy(Utilisateur::getId, Collectors.counting()));
+
+        Long maxCount = mapGroup.entrySet().stream().max(Map.Entry.comparingByValue()).get().getValue();
+
+        List<Long> idMaxCount = mapGroup.entrySet().stream().filter(e -> e.getValue() == maxCount).map(Map.Entry::getKey).collect(Collectors.toList());
+
+        return utilisateurList.filter(u -> idMaxCount.contains(u.getId())).collect(Collectors.toList());
     }
 }
