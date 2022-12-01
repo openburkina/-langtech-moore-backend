@@ -3,10 +3,7 @@ package bf.openburkina.langtechmoore.web.rest;
 import bf.openburkina.langtechmoore.domain.Utilisateur;
 import bf.openburkina.langtechmoore.repository.TraductionRepository;
 import bf.openburkina.langtechmoore.service.TraductionService;
-import bf.openburkina.langtechmoore.service.dto.AllContributionDTO;
-import bf.openburkina.langtechmoore.service.dto.StatMoisDTO;
-import bf.openburkina.langtechmoore.service.dto.TraductionDTO;
-import bf.openburkina.langtechmoore.service.dto.XSourceDTO;
+import bf.openburkina.langtechmoore.service.dto.*;
 import bf.openburkina.langtechmoore.web.rest.errors.BadRequestAlertException;
 
 import java.io.IOException;
@@ -263,7 +260,7 @@ public class TraductionResource {
     }
 
     @PostMapping("traductions/best-contributor")
-    public List<Utilisateur> getStatistique(@RequestParam Instant debut, @RequestParam Instant fin) {
-        return traductionService.bestContributor(debut, fin.plus(1, ChronoUnit.DAYS));
+    public List<Utilisateur> getStatistique(@RequestBody DateDTO date) {
+        return traductionService.bestContributor(date.getDebut(), date.getFin().plus(1, ChronoUnit.DAYS));
     }
 }
