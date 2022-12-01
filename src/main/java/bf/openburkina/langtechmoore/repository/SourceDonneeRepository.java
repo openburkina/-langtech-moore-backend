@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 /**
  * Spring Data JPA repository for the SourceDonnee entity.
  */
@@ -15,4 +17,6 @@ import org.springframework.stereotype.Repository;
 public interface SourceDonneeRepository extends JpaRepository<SourceDonnee, Long> {
     @Query("select s from SourceDonnee s where :libelle is null or upper(s.libelle) like upper('%'||:libelle||'%') ")
     Page<SourceDonnee>findAllWithCriteria(@Param("libelle") String libelle, Pageable pageable);
+
+    Optional<SourceDonnee> findByLibelle(String libelle);
 }

@@ -56,20 +56,15 @@ public class SourceDonneeResource {
      *
      * @param sourceDonneeDTO the sourceDonneeDTO to create.
      * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new sourceDonneeDTO, or with status {@code 400 (Bad Request)} if the sourceDonnee has already an ID.
-     * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("/source-donnees")
-    public ResponseEntity<SourceDonneeDTO> createSourceDonnee(@RequestBody SourceDonneeDTO sourceDonneeDTO)
-        throws URISyntaxException {
+    public ResponseEntity<MResponse> createSourceDonnee(@RequestBody SourceDonneeDTO sourceDonneeDTO) {
         log.debug("REST request to save SourceDonnee : {}", sourceDonneeDTO);
         if (sourceDonneeDTO.getId() != null) {
             throw new BadRequestAlertException("A new sourceDonnee cannot already have an ID", ENTITY_NAME, "idexists");
         }
-        SourceDonneeDTO result = sourceDonneeService.save(sourceDonneeDTO);
-        return ResponseEntity
-            .created(new URI("/api/source-donnees/" + result.getId()))
-            .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, result.getId().toString()))
-            .body(result);
+        MResponse result = sourceDonneeService.save(sourceDonneeDTO);
+        return ResponseEntity.ok().body(result);
     }
 
     /**

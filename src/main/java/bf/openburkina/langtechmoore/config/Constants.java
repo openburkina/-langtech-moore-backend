@@ -10,6 +10,7 @@ public final class Constants {
 
     public static final String SYSTEM = "system";
     public static final String DEFAULT_LANGUAGE = "fr";
+    public static final String MOIS[]={"january", "february","march","april","may","june","july","august","september","october","november","december"};
 
     private Constants() {}
 }
