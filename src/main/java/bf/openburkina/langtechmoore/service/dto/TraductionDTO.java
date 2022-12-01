@@ -1,9 +1,13 @@
 package bf.openburkina.langtechmoore.service.dto;
 
+import bf.openburkina.langtechmoore.domain.AbstractAuditingEntity;
 import bf.openburkina.langtechmoore.domain.enumeration.Etat;
 import bf.openburkina.langtechmoore.domain.enumeration.TypeTraduction;
 import io.swagger.v3.oas.annotations.media.Schema;
+import net.bytebuddy.implementation.bind.annotation.Super;
+
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Objects;
 import javax.persistence.Lob;
@@ -13,7 +17,7 @@ import javax.validation.constraints.*;
  * A DTO for the {@link bf.openburkina.langtechmoore.domain.Traduction} entity.
  */
 @Schema(description = "Traduction entity.\n@author The LonkoTech team.")
-public class TraductionDTO implements Serializable {
+public class TraductionDTO extends AbstractAuditingEntity implements Serializable {
 
     private Long id;
 
@@ -21,6 +25,8 @@ public class TraductionDTO implements Serializable {
     private String libelle;
 
     private String contenuTexte;
+
+    private String motif;
 
     @Lob
     private byte[] contenuAudio;
@@ -45,6 +51,24 @@ public class TraductionDTO implements Serializable {
     private SourceDonneeDTO sourceDonnee;
 
     private LangueDTO langue;
+
+    private String mois;
+
+    public String getMois() {
+        return mois;
+    }
+
+    public void setMois(String mois) {
+        this.mois = mois;
+    }
+
+    public String getMotif() {
+        return motif;
+    }
+
+    public void setMotif(String motif) {
+        this.motif = motif;
+    }
 
     public LangueDTO getLangue() {
         return langue;

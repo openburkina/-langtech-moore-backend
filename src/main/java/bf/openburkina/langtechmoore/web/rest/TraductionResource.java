@@ -4,6 +4,7 @@ import bf.openburkina.langtechmoore.domain.Utilisateur;
 import bf.openburkina.langtechmoore.repository.TraductionRepository;
 import bf.openburkina.langtechmoore.service.TraductionService;
 import bf.openburkina.langtechmoore.service.dto.AllContributionDTO;
+import bf.openburkina.langtechmoore.service.dto.StatMoisDTO;
 import bf.openburkina.langtechmoore.service.dto.TraductionDTO;
 import bf.openburkina.langtechmoore.service.dto.XSourceDTO;
 import bf.openburkina.langtechmoore.web.rest.errors.BadRequestAlertException;
@@ -235,7 +236,7 @@ public class TraductionResource {
     @PostMapping("/traductions/validation")
     public ResponseEntity<TraductionDTO> validation(@RequestBody TraductionDTO t) {
         log.debug("REST request to get Traduction : {}", t.getId());
-        Optional<TraductionDTO> traductionDTO = traductionService.validation(t.getId(), t.getEtat().toString());
+        Optional<TraductionDTO> traductionDTO = traductionService.validation(t.getId(), t.getEtat().toString(),t.getMotif());
         return ResponseUtil.wrapOrNotFound(traductionDTO);
     }
 
@@ -250,6 +251,11 @@ public class TraductionResource {
         return ResponseEntity.ok().body(traductionService.getTraductionsBySource(srcId));
     }
 
+    // TODO: 29/11/2022 Resource pour la récupération des stats des contribution en fonction de mois
+    @GetMapping("/traductions-get-info-stats-mois")
+    public List<StatMoisDTO> getInfoStatsMois() {
+        return traductionService.getInfoStatsMois();
+    }
     @GetMapping("/traductions/count-translated")
     public Long getAllSourceDonneeTranslated() {
         log.debug("REST request to get a page of Traductions");

@@ -1,5 +1,6 @@
 package bf.openburkina.langtechmoore.service;
 
+import bf.openburkina.langtechmoore.config.Constants;
 import bf.openburkina.langtechmoore.domain.SourceDonnee;
 import bf.openburkina.langtechmoore.domain.Traduction;
 import bf.openburkina.langtechmoore.domain.Utilisateur;
@@ -9,6 +10,7 @@ import bf.openburkina.langtechmoore.repository.SourceDonneeRepository;
 import bf.openburkina.langtechmoore.repository.TraductionRepository;
 import bf.openburkina.langtechmoore.repository.UtilisateurRepository;
 import bf.openburkina.langtechmoore.service.dto.AllContributionDTO;
+import bf.openburkina.langtechmoore.service.dto.StatMoisDTO;
 import bf.openburkina.langtechmoore.service.dto.TraductionDTO;
 import bf.openburkina.langtechmoore.service.dto.XSourceDTO;
 import bf.openburkina.langtechmoore.service.mapper.TraductionMapper;
@@ -16,6 +18,11 @@ import bf.openburkina.langtechmoore.service.mapper.TraductionMapper;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.time.Instant;
 import java.util.*;
 import java.util.function.Function;
@@ -194,6 +201,8 @@ public class TraductionService {
             return  saveDocToFolder(traductionDTO);
         } else {
             Traduction traduction=traductionMapper.toEntity(traductionDTO);
+            // TODO: 29/11/2022 recuperation du mois de l'enregistrement de la traduction
+            traduction.setMois(LocalDateTime.now().getMonth().name());
             traductionRepository.save(traduction);
         }
         return  null;
@@ -250,6 +259,8 @@ public class TraductionService {
                 log.debug("****---------Generate 2---------------*****");
 
                 traduction.setCheminDocument(folderToSave);
+                // TODO: 29/11/2022 recuperation du mois de l'enregistrement de la traduction
+                traduction.setMois(LocalDateTime.now().getMonth().name());
                 traductionRepository.save(traduction);
                 traductionDTO=traductionMapper.toDto(traduction);
                 traductionDTO.setContenuAudio(content);
@@ -287,7 +298,7 @@ public class TraductionService {
                 File img = new File(traductionFolder);
                 log.debug("is file------"+img+"et bool"+img.isFile());
                 // bytes = FileUtils.readFileToByteArray(img);
-                  bytes = Files.readAllBytes(Path.of(img.getPath()));
+                   bytes = Files.readAllBytes(Path.of(img.getPath()));
                 traductionDTO.setContenuAudio(bytes);
             }
 
@@ -335,7 +346,7 @@ public class TraductionService {
      * @return the entity.
      */
     @Transactional()
-    public Optional<TraductionDTO> validation(Long id, String etat) {
+    public Optional<TraductionDTO> validation(Long id, String etat,String motif) {
         log.debug("Request to get Traduction : {}", id);
 
         Traduction t = traductionRepository.findById(id).get();
@@ -373,6 +384,22 @@ public class TraductionService {
         log.debug("Request to get all Traductions");
         Optional<SourceDonnee> sourceDonnee = sourceDonneeRepository.findById(srcId);
         return traductionRepository.findTraductionBySourceDonnee(sourceDonnee.get()).stream().map(traductionMapper::toDto).collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<StatMoisDTO> getInfoStatsMois() {
+        log.debug("Request to get all Traductions");
+        List<StatMoisDTO>ls = new ArrayList<>();
+        StatMoisDTO s;
+        for (String m: Constants.MOIS){
+            s = new StatMoisDTO();
+            s.setMois(m);
+            s.setNombreContributionEnattente(traductionRepository.countTotalByOption(Etat.EN_ATTENTE,m.toUpperCase()));
+            s.setNombreContributionRejette(traductionRepository.countTotalByOption(Etat.REJETER,m.toUpperCase()));
+            s.setNombreContributionValide(traductionRepository.countTotalByOption(Etat.VALIDER,m.toUpperCase()));
+            ls.add(s);
+        }
+        return ls;
     }
 
     @Transactional(readOnly = true)
