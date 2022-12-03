@@ -203,5 +203,8 @@ public class SourceDonneeResource {
         return ResponseEntity.ok().body(result);
     }
 
-
+    @GetMapping("/source-donnees/count")
+    public Long countSourceDonnee() {
+        return sourceDonneeService.count();
+    }
 }

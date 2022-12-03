@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -53,4 +54,6 @@ public interface TraductionRepository extends JpaRepository<Traduction, Long> {
 
     @Query("select count(*) from Traduction t where t.etat=:etat and upper(t.mois)=:mois")
     Integer countTotalByOption(@Param("etat") Etat etat,@Param("mois") String mois);
+
+    List<Traduction> findByCreatedDateIsBetweenAndEtat(Instant debut, Instant fin, Etat etat);
 }

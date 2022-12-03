@@ -233,4 +233,10 @@ public class UtilisateurService {
         Optional<List<Utilisateur>> optionalUtilisateurs = utilisateurRepository.findByTypeUtilisateur(TypeUtilisateur.CONTRIBUTEUR);
         return optionalUtilisateurs.map(utilisateurs -> utilisateurs.stream().map(utilisateurMapper::toDto).collect(Collectors.toList())).orElse(null);
     }
+
+    @Transactional(readOnly = true)
+    public long countContributeur() {
+        log.debug("Request to get all Utilisateurs");
+        return utilisateurRepository.findByTypeUtilisateur(TypeUtilisateur.CONTRIBUTEUR).stream().count();
+    }
 }
