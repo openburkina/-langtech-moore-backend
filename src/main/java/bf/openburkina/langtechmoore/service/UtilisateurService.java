@@ -237,6 +237,7 @@ public class UtilisateurService {
     @Transactional(readOnly = true)
     public long countContributeur() {
         log.debug("Request to get all Utilisateurs");
+       // return utilisateurRepository.findByTypeUtilisateur(TypeUtilisateur.CONTRIBUTEUR).get().stream().count();
         return utilisateurRepository.findByTypeUtilisateur(TypeUtilisateur.CONTRIBUTEUR).stream().count();
     }
 }
