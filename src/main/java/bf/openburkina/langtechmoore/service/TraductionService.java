@@ -26,6 +26,7 @@ import java.util.Optional;
 import java.time.Instant;
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -420,20 +421,23 @@ public class TraductionService {
 
         List<AbstractMap.SimpleEntry<Utilisateur, Integer>> a = new ArrayList<>();
 
-        Stream<Utilisateur> utilisateurList = traductionRepository
+        List<Utilisateur> utilisateurList = traductionRepository
             .findByCreatedDateIsBetweenAndEtat(debut,fin,Etat.VALIDER)
             .stream()
-            .map(t -> t.getUtilisateur());
+            .map(t -> t.getUtilisateur())
+            .collect(Collectors.toList());
 
-        if (!utilisateurList.collect(Collectors.toList()).isEmpty()) {
-            Map<Long, Long>  mapGroup = utilisateurList
+
+        if (!utilisateurList.isEmpty()) {
+            Map<Long, Long>  mapGroup = utilisateurList.stream()
                 .collect(Collectors.groupingBy(Utilisateur::getId, Collectors.counting()));
+
 
             Long maxCount = mapGroup.entrySet().stream().max(Map.Entry.comparingByValue()).get().getValue();
 
             List<Long> idMaxCount = mapGroup.entrySet().stream().filter(e -> e.getValue() == maxCount).map(Map.Entry::getKey).collect(Collectors.toList());
 
-            return utilisateurList.filter(u -> idMaxCount.contains(u.getId())).collect(Collectors.toList());
+            return utilisateurList.stream().distinct().filter(u -> idMaxCount.contains(u.getId())).collect(Collectors.toList());
 
         }
 
