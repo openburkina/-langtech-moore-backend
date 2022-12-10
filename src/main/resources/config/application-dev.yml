@@ -38,7 +38,7 @@ spring:
 #    password: LAn9T3M0OrE
     url: jdbc:postgresql://localhost:5432/test
     username: langtechMooreBackend
-    password: admin_langtech
+    password: langtechMooreBackend
     hikari:
       poolName: Hikari
       auto-commit: false
