@@ -21,7 +21,7 @@ public interface UtilisateurRepository extends JpaRepository<Utilisateur, Long> 
 
     List<Utilisateur> findByProfilId(Long id);
 
-    Optional<List<Utilisateur>> findByTypeUtilisateur(TypeUtilisateur typeUtilisateur);
+    List<Utilisateur> findByTypeUtilisateur(TypeUtilisateur typeUtilisateur);
 
     @Query("select u from Utilisateur u where (" +
         "(:nom is null or :nom='' or u.nom like ('%'||:nom||'%') )" +
