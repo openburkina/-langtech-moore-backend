@@ -20,6 +20,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -369,11 +370,12 @@ public class TraductionService {
     public List<AllContributionDTO> getStatContribution(XSourceDTO xSourceDTO){
         List<AllContributionDTO> allContribution=new ArrayList<>();
         List<Utilisateur> contributeur= utilisateurRepository.findAll();
+        ZonedDateTime dateFin=xSourceDTO.getFin().plusHours(23).plusMinutes(59).plusSeconds(59);
         contributeur.forEach(utilisateur -> {
             AllContributionDTO contribution=new AllContributionDTO();
-            contribution.setUtilisateur(utilisateur.getNom()+" "+utilisateur.getPrenom()+" "+utilisateur.getTelephone());
+            contribution.setUtilisateur(utilisateur.getNom()+" "+utilisateur.getPrenom()+" "+utilisateur.getTelephone()+" "+utilisateur.getEmail());
             contribution.setTypeTraduction(xSourceDTO.getTypeTraduction());
-            Integer point=traductionRepository.countContribution(utilisateur.getId(),xSourceDTO.getTypeTraduction(),Etat.VALIDER.name(),xSourceDTO.getDebut(),xSourceDTO.getFin());
+            Integer point=traductionRepository.countContribution(utilisateur.getId(),xSourceDTO.getTypeTraduction(),Etat.VALIDER.name(),xSourceDTO.getDebut(),dateFin);
             contribution.setPointFedelite(point);
             allContribution.add(contribution);
         });
