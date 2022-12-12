@@ -33,12 +33,12 @@ spring:
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
 #    url: jdbc:postgresql://178.128.248.138:5432/langtechdb
-#    url: jdbc:postgresql://localhost:5432/langtechdb
+    url: jdbc:postgresql://localhost:5432/langtechdb
 #    username: admin_langtech
 #    password: LAn9T3M0OrE
-    url: jdbc:postgresql://localhost:5432/test
+    #url: jdbc:postgresql://localhost:5432/test
     username: langtechMooreBackend
-    password: admin_langtech
+    password: langtechMooreBackend
     hikari:
       poolName: Hikari
       auto-commit: false

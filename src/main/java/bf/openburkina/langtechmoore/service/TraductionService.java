@@ -20,12 +20,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.time.Instant;
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -368,11 +370,12 @@ public class TraductionService {
     public List<AllContributionDTO> getStatContribution(XSourceDTO xSourceDTO){
         List<AllContributionDTO> allContribution=new ArrayList<>();
         List<Utilisateur> contributeur= utilisateurRepository.findAll();
+        ZonedDateTime dateFin=xSourceDTO.getFin().plusHours(23).plusMinutes(59).plusSeconds(59);
         contributeur.forEach(utilisateur -> {
             AllContributionDTO contribution=new AllContributionDTO();
-            contribution.setUtilisateur(utilisateur.getNom()+" "+utilisateur.getPrenom()+" "+utilisateur.getTelephone());
+            contribution.setUtilisateur(utilisateur.getNom()+" "+utilisateur.getPrenom()+" "+utilisateur.getTelephone()+" "+utilisateur.getEmail());
             contribution.setTypeTraduction(xSourceDTO.getTypeTraduction());
-            Integer point=traductionRepository.countContribution(utilisateur.getId(),xSourceDTO.getTypeTraduction(),Etat.VALIDER.name(),xSourceDTO.getDebut(),xSourceDTO.getFin());
+            Integer point=traductionRepository.countContribution(utilisateur.getId(),xSourceDTO.getTypeTraduction(),Etat.VALIDER.name(),xSourceDTO.getDebut(),dateFin);
             contribution.setPointFedelite(point);
             allContribution.add(contribution);
         });
@@ -420,20 +423,23 @@ public class TraductionService {
 
         List<AbstractMap.SimpleEntry<Utilisateur, Integer>> a = new ArrayList<>();
 
-        Stream<Utilisateur> utilisateurList = traductionRepository
+        List<Utilisateur> utilisateurList = traductionRepository
             .findByCreatedDateIsBetweenAndEtat(debut,fin,Etat.VALIDER)
             .stream()
-            .map(t -> t.getUtilisateur());
+            .map(t -> t.getUtilisateur())
+            .collect(Collectors.toList());
 
-        if (!utilisateurList.collect(Collectors.toList()).isEmpty()) {
-            Map<Long, Long>  mapGroup = utilisateurList
+
+        if (!utilisateurList.isEmpty()) {
+            Map<Long, Long>  mapGroup = utilisateurList.stream()
                 .collect(Collectors.groupingBy(Utilisateur::getId, Collectors.counting()));
+
 
             Long maxCount = mapGroup.entrySet().stream().max(Map.Entry.comparingByValue()).get().getValue();
 
             List<Long> idMaxCount = mapGroup.entrySet().stream().filter(e -> e.getValue() == maxCount).map(Map.Entry::getKey).collect(Collectors.toList());
 
-            return utilisateurList.filter(u -> idMaxCount.contains(u.getId())).collect(Collectors.toList());
+            return utilisateurList.stream().distinct().filter(u -> idMaxCount.contains(u.getId())).collect(Collectors.toList());
 
         }
 
