@@ -30,6 +30,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import io.prometheus.client.Supplier;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.slf4j.Logger;
@@ -426,13 +427,18 @@ public class TraductionService {
             .stream()
             .map(t -> t.getUtilisateur());
 
-        Map<Long, Long>  mapGroup = utilisateurList
-            .collect(Collectors.groupingBy(Utilisateur::getId, Collectors.counting()));
+        if (!utilisateurList.collect(Collectors.toList()).isEmpty()) {
+            Map<Long, Long>  mapGroup = utilisateurList
+                .collect(Collectors.groupingBy(Utilisateur::getId, Collectors.counting()));
 
-        Long maxCount = mapGroup.entrySet().stream().max(Map.Entry.comparingByValue()).get().getValue();
+            Long maxCount = mapGroup.entrySet().stream().max(Map.Entry.comparingByValue()).get().getValue();
 
-        List<Long> idMaxCount = mapGroup.entrySet().stream().filter(e -> e.getValue() == maxCount).map(Map.Entry::getKey).collect(Collectors.toList());
+            List<Long> idMaxCount = mapGroup.entrySet().stream().filter(e -> e.getValue() == maxCount).map(Map.Entry::getKey).collect(Collectors.toList());
 
-        return utilisateurList.filter(u -> idMaxCount.contains(u.getId())).collect(Collectors.toList());
+            return utilisateurList.filter(u -> idMaxCount.contains(u.getId())).collect(Collectors.toList());
+
+        }
+
+        return new ArrayList<>();
     }
 }
