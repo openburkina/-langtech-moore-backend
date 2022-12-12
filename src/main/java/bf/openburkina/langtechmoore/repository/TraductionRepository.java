@@ -58,4 +58,20 @@ public interface TraductionRepository extends JpaRepository<Traduction, Long> {
     List<Traduction> findByCreatedDateIsBetweenAndEtat(Instant debut, Instant fin, Etat etat);
 
 
+    @Query("select tr from Traduction tr where (" +
+        "(:libelle is null or :libelle='' or tr.libelle like ('%'||:libelle||'%') )" +
+        " and (:etat is null or :etat='' or tr.etat like ('%'||:etat||'%'))" +
+        " and (:typeTraduction is null or :typeTraduction='' or tr.type like('%'||:typeTraduction||'%'))" +
+        " and(:contenuAudioContentType is null or :contenuAudioContentType='' or tr.contenuAudioContentType like('%'||:contenuAudioContentType||'%'))" +
+        " and(:sourceDonneeId is null or tr.sourceDonnee.id=:sourceDonneeId)" +
+        " and(:utilisateurId is null or tr.utilisateur.id=:utilisateurId)" +
+        " and(:langueId is null or tr.langue.id=:langueId))")
+    List<Traduction> findAllPersoWithCriteria(
+        @Param("libelle") String libelle,
+        @Param("etat") String etat,
+        @Param("typeTraduction") String typeTraduction,
+        @Param("contenuAudioContentType") String contenuAudioContentType,
+        @Param("sourceDonneeId") Long sourceDonneeId,
+        @Param("utilisateurId") Long utilisateurId,
+        @Param("langueId") Long langueId);
 }

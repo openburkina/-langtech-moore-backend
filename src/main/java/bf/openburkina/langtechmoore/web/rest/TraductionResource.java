@@ -169,6 +169,12 @@ public class TraductionResource {
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
 
+    @PostMapping("/traductions/count/criteria")
+    public List<TraductionDTO> getAllTraductionsPersoByCriteria(@RequestBody TraductionDTO traductionDTO) {
+        log.debug("REST request to get a page of Traductions");
+        return traductionService.findAllpersoByCriteria(traductionDTO);
+    }
+
     /**
      * {@code GET  /traductions/:id} : get the "id" traduction.
      *
