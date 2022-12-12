@@ -147,6 +147,21 @@ public class TraductionService {
             ,pageable).map(traductionMapper::toDto);
     }
 
+
+    @Transactional(readOnly = true)
+    public List<TraductionDTO> findAllpersoByCriteria(TraductionDTO traductionDTO) {
+        log.debug("Request to get all Traductions");
+        return traductionRepository.findAllPersoWithCriteria(
+            traductionDTO.getLibelle(),
+            traductionDTO.getEtat()!=null?traductionDTO.getEtat().name():null,
+            traductionDTO.getType()!=null?traductionDTO.getType().name():null,
+            traductionDTO.getContenuAudioContentType(),
+            traductionDTO.getSourceDonnee()!=null?traductionDTO.getSourceDonnee().getId():null,
+            traductionDTO.getUtilisateur()!=null?traductionDTO.getUtilisateur().getId():null,
+            traductionDTO.getLangue()!=null?traductionDTO.getLangue().getId():null
+            ).stream().map(traductionMapper::toDto).collect(Collectors.toList());
+    }
+
     /**
      * Get one traduction by id.
      *
