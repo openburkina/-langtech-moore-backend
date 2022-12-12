@@ -56,4 +56,6 @@ public interface TraductionRepository extends JpaRepository<Traduction, Long> {
     Integer countTotalByOption(@Param("etat") Etat etat,@Param("mois") String mois);
 
     List<Traduction> findByCreatedDateIsBetweenAndEtat(Instant debut, Instant fin, Etat etat);
+
+
 }

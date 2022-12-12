@@ -264,4 +264,5 @@ public class TraductionResource {
         System.err.println(date);
         return traductionService.bestContributor(date.getDebut(), date.getFin().plus(1, ChronoUnit.DAYS));
     }
+
 }
