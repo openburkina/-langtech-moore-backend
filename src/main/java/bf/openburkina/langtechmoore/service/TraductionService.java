@@ -364,18 +364,20 @@ public class TraductionService {
      */
     @Transactional()
     public Optional<TraductionDTO> validation(Long id, String etat,String motif) {
-        log.debug("Request to get Traduction : {}", id);
+        log.debug("Request to get Traduction : {}, {}, {}", id, etat, motif);
 
         Traduction t = traductionRepository.findById(id).get();
         Utilisateur u = t.getUtilisateur();
 
-        List<Traduction> tt = traductionRepository.findTraductionByEtatAndUtilisateurIdAndSourceDonneeIdAndType(Etat.VALIDER, u.getId(), t.getSourceDonnee().getId(), t.getType());
+        if (!Etat.valueOf(etat).equals(Etat.REJETER)) {
+            List<Traduction> tt = traductionRepository.findTraductionByEtatAndUtilisateurIdAndSourceDonneeIdAndType(Etat.VALIDER, u.getId(), t.getSourceDonnee().getId(), t.getType());
 
-        if (tt.isEmpty()){
-            u.setPointFidelite(u.getPointFidelite() + 1);
+            if (tt.isEmpty()){
+                u.setPointFidelite(u.getPointFidelite() + 1);
+            }
         }
-
         t.setEtat(Etat.valueOf(etat));
+        t.setMotif(motif);
         traductionRepository.save(t);
         utilisateurRepository.save(u);
 

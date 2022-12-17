@@ -121,14 +121,21 @@ public class UserService {
                     throw new UsernameAlreadyUsedException();
                 }
             });
-        userRepository
-            .findOneByEmailIgnoreCase(userDTO.getEmail())
-            .ifPresent(existingUser -> {
-                boolean removed = removeNonActivatedUser(existingUser);
-                if (!removed) {
-                    throw new EmailAlreadyUsedException();
-                }
-            });
+
+        if (userDTO.getEmail().equals("")) {
+            userDTO.setEmail(null);
+        }
+        if (userDTO.getEmail() != null && !userDTO.getEmail().equals("")) {
+            userRepository
+                .findOneByEmailIgnoreCase(userDTO.getEmail())
+                .ifPresent(existingUser -> {
+                    boolean removed = removeNonActivatedUser(existingUser);
+                    if (!removed) {
+                        throw new EmailAlreadyUsedException();
+                    }
+                });
+        }
+
         User newUser = new User();
         Utilisateur utilisateur = utilisateurMapper.toEntity(userDTO);
         String encryptedPassword = passwordEncoder.encode(password);
