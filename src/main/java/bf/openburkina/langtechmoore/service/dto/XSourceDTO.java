@@ -8,6 +8,8 @@ public class XSourceDTO {
     public ZonedDateTime debut;
     public ZonedDateTime fin;
 
+    public Long contributeurId;
+
     public String getTypeTraduction() {
         return typeTraduction;
     }
@@ -18,6 +20,14 @@ public class XSourceDTO {
 
     public String getEtat() {
         return etat;
+    }
+
+    public Long getContributeurId() {
+        return contributeurId;
+    }
+
+    public void setContributeurId(Long contributeurId) {
+        this.contributeurId = contributeurId;
     }
 
     public void setEtat(String etat) {
