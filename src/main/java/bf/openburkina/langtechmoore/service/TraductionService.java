@@ -385,6 +385,9 @@ public class TraductionService {
     public List<AllContributionDTO> getStatContribution(XSourceDTO xSourceDTO){
         List<AllContributionDTO> allContribution=new ArrayList<>();
         List<Utilisateur> contributeur= utilisateurRepository.findAll();
+        if(xSourceDTO.getContributeurId() !=null){
+            contributeur = contributeur.stream().filter(item-> Objects.equals(item.getId(), xSourceDTO.getContributeurId())).collect(Collectors.toList());
+        }
         ZonedDateTime dateFin=xSourceDTO.getFin().plusHours(23).plusMinutes(59).plusSeconds(59);
         contributeur.forEach(utilisateur -> {
             AllContributionDTO contribution=new AllContributionDTO();
