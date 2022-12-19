@@ -9,10 +9,7 @@ import bf.openburkina.langtechmoore.domain.enumeration.TypeTraduction;
 import bf.openburkina.langtechmoore.repository.SourceDonneeRepository;
 import bf.openburkina.langtechmoore.repository.TraductionRepository;
 import bf.openburkina.langtechmoore.repository.UtilisateurRepository;
-import bf.openburkina.langtechmoore.service.dto.AllContributionDTO;
-import bf.openburkina.langtechmoore.service.dto.StatMoisDTO;
-import bf.openburkina.langtechmoore.service.dto.TraductionDTO;
-import bf.openburkina.langtechmoore.service.dto.XSourceDTO;
+import bf.openburkina.langtechmoore.service.dto.*;
 import bf.openburkina.langtechmoore.service.mapper.TraductionMapper;
 
 import java.io.*;
@@ -438,10 +435,10 @@ public class TraductionService {
     }
 
     @Transactional(readOnly = true)
-    public List<Utilisateur> bestContributor(Instant debut, Instant fin) {
+    public BestContributorDTO bestContributor(Instant debut, Instant fin) {
         log.debug("Request to get all Traductions");
 
-        List<AbstractMap.SimpleEntry<Utilisateur, Integer>> a = new ArrayList<>();
+        BestContributorDTO bestContributorDTO = new BestContributorDTO();
 
         List<Utilisateur> utilisateurList = traductionRepository
             .findByCreatedDateIsBetweenAndEtat(debut,fin,Etat.VALIDER)
@@ -459,10 +456,11 @@ public class TraductionService {
 
             List<Long> idMaxCount = mapGroup.entrySet().stream().filter(e -> e.getValue() == maxCount).map(Map.Entry::getKey).collect(Collectors.toList());
 
-            return utilisateurList.stream().distinct().filter(u -> idMaxCount.contains(u.getId())).collect(Collectors.toList());
+            bestContributorDTO.setUtilisateurs(utilisateurList.stream().distinct().filter(u -> idMaxCount.contains(u.getId())).collect(Collectors.toList()));
 
+            bestContributorDTO.setPointFidelite(maxCount);
         }
 
-        return new ArrayList<>();
+        return bestContributorDTO;
     }
 }
