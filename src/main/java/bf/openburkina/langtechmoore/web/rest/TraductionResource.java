@@ -266,7 +266,7 @@ public class TraductionResource {
     }
 
     @PostMapping("traductions/best-contributor")
-    public List<Utilisateur> getStatistique(@RequestBody DateDTO date) {
+    public BestContributorDTO getStatistique(@RequestBody DateDTO date) {
         System.err.println(date);
         return traductionService.bestContributor(date.getDebut(), date.getFin().plus(1, ChronoUnit.DAYS));
     }
