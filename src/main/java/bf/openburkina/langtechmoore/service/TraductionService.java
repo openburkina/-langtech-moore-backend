@@ -17,6 +17,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -141,6 +142,21 @@ public class TraductionService {
             traductionDTO.getUtilisateur()!=null?traductionDTO.getUtilisateur().getId():null,
             traductionDTO.getLangue()!=null?traductionDTO.getLangue().getId():null
             ,pageable).map(traductionMapper::toDto);
+    }
+
+
+    @Transactional(readOnly = true)
+    public List<TraductionDTO> findAllpersoByCriteria(TraductionDTO traductionDTO) {
+        log.debug("Request to get all Traductions");
+        return traductionRepository.findAllPersoWithCriteria(
+            traductionDTO.getLibelle(),
+            traductionDTO.getEtat()!=null?traductionDTO.getEtat().name():null,
+            traductionDTO.getType()!=null?traductionDTO.getType().name():null,
+            traductionDTO.getContenuAudioContentType(),
+            traductionDTO.getSourceDonnee()!=null?traductionDTO.getSourceDonnee().getId():null,
+            traductionDTO.getUtilisateur()!=null?traductionDTO.getUtilisateur().getId():null,
+            traductionDTO.getLangue()!=null?traductionDTO.getLangue().getId():null
+            ).stream().map(traductionMapper::toDto).collect(Collectors.toList());
     }
 
     /**
@@ -366,11 +382,15 @@ public class TraductionService {
     public List<AllContributionDTO> getStatContribution(XSourceDTO xSourceDTO){
         List<AllContributionDTO> allContribution=new ArrayList<>();
         List<Utilisateur> contributeur= utilisateurRepository.findAll();
+        if(xSourceDTO.getContributeurId() !=null){
+            contributeur = contributeur.stream().filter(item-> Objects.equals(item.getId(), xSourceDTO.getContributeurId())).collect(Collectors.toList());
+        }
+        ZonedDateTime dateFin=xSourceDTO.getFin().plusHours(23).plusMinutes(59).plusSeconds(59);
         contributeur.forEach(utilisateur -> {
             AllContributionDTO contribution=new AllContributionDTO();
-            contribution.setUtilisateur(utilisateur.getNom()+" "+utilisateur.getPrenom()+" "+utilisateur.getTelephone());
+            contribution.setUtilisateur(utilisateur.getNom()+" "+utilisateur.getPrenom()+" "+utilisateur.getTelephone()+" "+utilisateur.getEmail());
             contribution.setTypeTraduction(xSourceDTO.getTypeTraduction());
-            Integer point=traductionRepository.countContribution(utilisateur.getId(),xSourceDTO.getTypeTraduction(),Etat.VALIDER.name(),xSourceDTO.getDebut(),xSourceDTO.getFin());
+            Integer point=traductionRepository.countContribution(utilisateur.getId(),xSourceDTO.getTypeTraduction(),Etat.VALIDER.name(),xSourceDTO.getDebut(),dateFin);
             contribution.setPointFedelite(point);
             allContribution.add(contribution);
         });
