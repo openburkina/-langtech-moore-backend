@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 import bf.openburkina.langtechmoore.service.dto.UtilisateurDTO;
 import bf.openburkina.langtechmoore.service.mapper.UserMapper;
 import bf.openburkina.langtechmoore.service.mapper.UtilisateurMapper;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.CacheManager;
@@ -98,15 +99,16 @@ public class UserService {
             });
     }
 
-    public Optional<User> requestPasswordReset(String mail) {
+    public Optional<User> requestPasswordReset(String phone) {
+        String password = RandomStringUtils.randomNumeric(5);
         return userRepository
-            .findOneByEmailIgnoreCase(mail)
+            .findOneByLogin(phone)
             .filter(User::isActivated)
             .map(user -> {
                 user.setResetKey(RandomUtil.generateResetKey());
                 user.setResetDate(Instant.now());
                 user.setDefaultPassord(true);
-                user.setPassword(passwordEncoder.encode("langtech"));
+                user.setPassword(passwordEncoder.encode(password));
                 this.clearUserCaches(user);
                 return user;
             });

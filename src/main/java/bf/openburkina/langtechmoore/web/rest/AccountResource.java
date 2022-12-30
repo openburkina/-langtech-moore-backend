@@ -5,16 +5,15 @@ import bf.openburkina.langtechmoore.repository.UserRepository;
 import bf.openburkina.langtechmoore.security.SecurityUtils;
 import bf.openburkina.langtechmoore.service.MailService;
 import bf.openburkina.langtechmoore.service.UserService;
-import bf.openburkina.langtechmoore.service.dto.AdminUserDTO;
-import bf.openburkina.langtechmoore.service.dto.PasswordChangeDTO;
-import bf.openburkina.langtechmoore.service.dto.UserDTO;
-import bf.openburkina.langtechmoore.service.dto.UtilisateurDTO;
+import bf.openburkina.langtechmoore.service.dto.*;
 import bf.openburkina.langtechmoore.web.rest.errors.*;
 import bf.openburkina.langtechmoore.web.rest.vm.KeyAndPasswordVM;
 import bf.openburkina.langtechmoore.web.rest.vm.ManagedUserVM;
 import java.util.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+
+import liquibase.pro.packaged.M;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -150,14 +149,16 @@ public class AccountResource {
      * @param mail the mail of the user.
      */
     @PostMapping(path = "/account/reset-password/init")
-    public void requestPasswordReset(@RequestBody String mail) {
+    public MResponse requestPasswordReset(@RequestBody String mail) {
         Optional<User> user = userService.requestPasswordReset(mail);
         if (user.isPresent()) {
             mailService.sendPasswordResetMail(user.get());
+            return new MResponse("0", "Mot de passe modifié avec succès !");
         } else {
             // Pretend the request has been successful to prevent checking which emails really exist
             // but log that an invalid attempt has been made
             log.warn("Password reset requested for non existing mail");
+            return new MResponse("-1", "Compte inexistant !");
         }
     }
 
