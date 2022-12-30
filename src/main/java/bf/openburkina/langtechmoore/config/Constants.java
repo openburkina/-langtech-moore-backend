@@ -10,6 +10,10 @@ public final class Constants {
 
     public static final String SYSTEM = "system";
     public static final String DEFAULT_LANGUAGE = "fr";
+    public static final String API_SMS_USERNAME = "ACa7a719f8501f2ffb60c78dda37c6b950";
+    public static final String API_SMS_PASSWORD = "d3048946d8c856ef3dd9e59d32853eb8";
+    public static final String API_SMS_TELEPHONE = "+12056561317";
+
     public static final String MOIS[]={"january", "february","march","april","may","june","july","august","september","october","november","december"};
 
     private Constants() {}
