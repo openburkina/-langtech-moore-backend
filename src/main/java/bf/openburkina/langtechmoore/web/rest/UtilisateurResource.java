@@ -58,6 +58,17 @@ public class UtilisateurResource {
     @PostMapping("/utilisateurs")
     public ResponseEntity<UtilisateurDTO> createUtilisateur(@Valid @RequestBody UtilisateurDTO utilisateurDTO) throws URISyntaxException {
         log.debug("REST request to save Utilisateur : {}", utilisateurDTO);
+        /*Twilio.init(Constants.API_SMS_USERNAME, Constants.API_SMS_PASSWORD);
+
+        Message message = Message
+            .creator(
+                new PhoneNumber("+22670781683"),
+                new PhoneNumber(Constants.API_SMS_TELEPHONE),
+                "Votre mot de passe est 12345 . Kizito"
+            )
+            .create();
+
+        System.out.println(message.getSid());*/
         if (utilisateurDTO.getId() != null) {
             throw new BadRequestAlertException("A new utilisateur cannot already have an ID", ENTITY_NAME, "idexists");
         }
