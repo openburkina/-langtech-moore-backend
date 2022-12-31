@@ -30,6 +30,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tech.jhipster.security.RandomUtil;
+import com.twilio.Twilio;
+import com.twilio.rest.api.v2010.account.Message;
+import com.twilio.type.PhoneNumber;
 
 /**
  * Service class for managing users.
@@ -109,9 +112,22 @@ public class UserService {
                 user.setResetDate(Instant.now());
                 user.setDefaultPassord(true);
                 user.setPassword(passwordEncoder.encode(password));
+                this.sendSms(phone,"Votre mot de passe est "+user.getPassword());
                 this.clearUserCaches(user);
                 return user;
             });
+    }
+
+    private void sendSms(String telephone,String body){
+        Twilio.init(Constants.API_SMS_USERNAME, Constants.API_SMS_PASSWORD);
+        Message message = Message
+            .creator(
+                new PhoneNumber(telephone),
+                new PhoneNumber(Constants.API_SMS_TELEPHONE),
+                body
+            )
+            .create();
+        System.out.println(message.getSid());
     }
 
     public UserDTO registerUser(UtilisateurDTO userDTO, String password) {
