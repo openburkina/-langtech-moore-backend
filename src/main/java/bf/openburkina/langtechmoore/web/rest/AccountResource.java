@@ -152,7 +152,7 @@ public class AccountResource {
     public MResponse requestPasswordReset(@RequestBody String mail) {
         Optional<User> user = userService.requestPasswordReset(mail);
         if (user.isPresent()) {
-            mailService.sendPasswordResetMail(user.get());
+           // mailService.sendPasswordResetMail(user.get());
             return new MResponse("0", "Mot de passe modifié avec succès !");
         } else {
             // Pretend the request has been successful to prevent checking which emails really exist
