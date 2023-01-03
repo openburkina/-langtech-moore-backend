@@ -150,15 +150,16 @@ public class AccountResource {
      */
     @PostMapping(path = "/account/reset-password/init")
     public MResponse requestPasswordReset(@RequestBody String mail) {
+        log.debug("REST Request to init reset password : {}", mail);
         Optional<User> user = userService.requestPasswordReset(mail);
         if (user.isPresent()) {
-            mailService.sendPasswordResetMail(user.get());
+            // mailService.sendPasswordResetMail(user.get());
             return new MResponse("0", "Mot de passe modifié avec succès !");
         } else {
             // Pretend the request has been successful to prevent checking which emails really exist
             // but log that an invalid attempt has been made
             log.warn("Password reset requested for non existing mail");
-            return new MResponse("-1", "Compte inexistant !");
+            return new MResponse("-1", "Aucun compte n'est associé à ce numéro de téléphone !");
         }
     }
 

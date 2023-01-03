@@ -103,6 +103,7 @@ public class UserService {
     }
 
     public Optional<User> requestPasswordReset(String phone) {
+        log.debug("REST Request to reset password of : {}", phone);
         String password = RandomStringUtils.randomNumeric(5);
         return userRepository
             .findOneByLogin(phone)
@@ -119,6 +120,7 @@ public class UserService {
     }
 
     private void sendSms(String telephone,String body){
+        log.debug("REST Request to send sms : {}, {}", telephone, body);
         Twilio.init(Constants.API_SMS_USERNAME, Constants.API_SMS_PASSWORD);
         Message message = Message
             .creator(
