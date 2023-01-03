@@ -13,7 +13,11 @@ import java.util.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import com.twilio.Twilio;
+import com.twilio.rest.api.v2010.account.Message;
+import com.twilio.type.PhoneNumber;
 import liquibase.pro.packaged.M;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -143,17 +147,13 @@ public class AccountResource {
         userService.changePassword(passwordChangeDto.getCurrentPassword(), passwordChangeDto.getNewPassword());
     }
 
-    /**
-     * {@code POST   /account/reset-password/init} : Send an email to reset the password of the user.
-     *
-     * @param mail the mail of the user.
-     */
+
     @PostMapping(path = "/account/reset-password/init")
-    public MResponse requestPasswordReset(@RequestBody String mail) {
-        log.debug("REST Request to init reset password : {}", mail);
-        Optional<User> user = userService.requestPasswordReset(mail);
+    public MResponse requestPasswordReset(@RequestBody String phone) {
+        String password = RandomStringUtils.randomNumeric(5);
+        Optional<User> user = userService.requestPasswordReset(phone, password);
         if (user.isPresent()) {
-            // mailService.sendPasswordResetMail(user.get());
+            userService.sendSms(phone, password);
             return new MResponse("0", "Mot de passe modifié avec succès !");
         } else {
             // Pretend the request has been successful to prevent checking which emails really exist

@@ -102,9 +102,8 @@ public class UserService {
             });
     }
 
-    public Optional<User> requestPasswordReset(String phone) {
-        log.debug("REST Request to reset password of : {}", phone);
-        String password = RandomStringUtils.randomNumeric(5);
+    public Optional<User> requestPasswordReset(String phone, String password) {
+        log.debug("REST Request to reset password : {}", phone);
         return userRepository
             .findOneByLogin(phone)
             .filter(User::isActivated)
@@ -113,23 +112,23 @@ public class UserService {
                 user.setResetDate(Instant.now());
                 user.setDefaultPassord(true);
                 user.setPassword(passwordEncoder.encode(password));
-                this.sendSms(phone,"Votre mot de passe est "+user.getPassword());
                 this.clearUserCaches(user);
                 return user;
             });
     }
 
-    private void sendSms(String telephone,String body){
-        log.debug("REST Request to send sms : {}, {}", telephone, body);
-        Twilio.init(Constants.API_SMS_USERNAME, Constants.API_SMS_PASSWORD);
+    public void sendSms(String telephone,String password){
+        log.debug("REST Request to send sms : {}, {}", telephone, password);
+        String messageBody = "Votre mot de passe est : " + password;
+        Twilio.init(Constants.TWILIO_API_KEY_SID, Constants.TWILIO_API_KEY_SECRET, Constants.TWILIO_ACCOUNT_ID);
         Message message = Message
             .creator(
                 new PhoneNumber(telephone),
-                new PhoneNumber(Constants.API_SMS_TELEPHONE),
-                body
+                new PhoneNumber(Constants.TWILIO_SENDER),
+                messageBody
             )
             .create();
-        System.out.println(message.getSid());
+        log.debug("SMS sended successfully... : {}", message.getSid());
     }
 
     public UserDTO registerUser(UtilisateurDTO userDTO, String password) {
