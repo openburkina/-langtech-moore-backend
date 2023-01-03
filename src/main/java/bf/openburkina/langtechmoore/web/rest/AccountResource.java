@@ -13,7 +13,11 @@ import java.util.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import com.twilio.Twilio;
+import com.twilio.rest.api.v2010.account.Message;
+import com.twilio.type.PhoneNumber;
 import liquibase.pro.packaged.M;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -143,15 +147,20 @@ public class AccountResource {
         userService.changePassword(passwordChangeDto.getCurrentPassword(), passwordChangeDto.getNewPassword());
     }
 
-    /**
-     * {@code POST   /account/reset-password/init} : Send an email to reset the password of the user.
-     *
-     * @param mail the mail of the user.
-     */
+
     @PostMapping(path = "/account/reset-password/init")
-    public MResponse requestPasswordReset(@RequestBody String mail) {
-        Optional<User> user = userService.requestPasswordReset(mail);
+    public MResponse requestPasswordReset(@RequestBody String phone) {
+        String password = RandomStringUtils.randomNumeric(5);
+        Optional<User> user = userService.requestPasswordReset(phone,password);
         if (user.isPresent()) {
+            Twilio.init("ACa7a719f8501f2ffb60c78dda37c6b950", "e402381f3b577f0a9437cecf22d6212d");
+            Message
+                .creator(
+                    new PhoneNumber(phone),
+                    new PhoneNumber("OPENBURKINA"),
+                    "Votre mot de passe est "+password
+                )
+                .create();
            // mailService.sendPasswordResetMail(user.get());
             return new MResponse("0", "Mot de passe modifié avec succès !");
         } else {

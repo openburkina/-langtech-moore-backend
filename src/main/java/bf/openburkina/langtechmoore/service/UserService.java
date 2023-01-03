@@ -102,8 +102,8 @@ public class UserService {
             });
     }
 
-    public Optional<User> requestPasswordReset(String phone) {
-        String password = RandomStringUtils.randomNumeric(5);
+    public Optional<User> requestPasswordReset(String phone,String password) {
+
         return userRepository
             .findOneByLogin(phone)
             .filter(User::isActivated)
@@ -112,16 +112,7 @@ public class UserService {
                 user.setResetDate(Instant.now());
                 user.setDefaultPassord(true);
                 user.setPassword(passwordEncoder.encode(password));
-                Twilio.init("ACa7a719f8501f2ffb60c78dda37c6b950", "8b9abcb4d38088caec8549e3d87797db");
-
-                Message
-                    .creator(
-                        new PhoneNumber(phone),
-                        new PhoneNumber("OPENBURKINA"),
-                        "Votre mot de passe est "+user.getPassword()
-                    )
-                    .create();
-                this.clearUserCaches(user);
+               this.clearUserCaches(user);
                 return user;
             });
     }
