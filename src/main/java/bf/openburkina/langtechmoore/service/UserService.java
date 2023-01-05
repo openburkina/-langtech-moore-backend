@@ -103,7 +103,7 @@ public class UserService {
     }
 
     public Optional<User> requestPasswordReset(String phone, String password) {
-        log.debug("REST Request to reset password : {}", phone);
+        log.debug("REST Request to reset password : {}, {}", phone, password);
         return userRepository
             .findOneByLogin(phone)
             .filter(User::isActivated)
