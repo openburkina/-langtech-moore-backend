@@ -230,14 +230,13 @@ public class UtilisateurService {
     }
 
     public List<UtilisateurDTO> findAllContributeur() {
-        Optional<List<Utilisateur>> optionalUtilisateurs = utilisateurRepository.findByTypeUtilisateur(TypeUtilisateur.CONTRIBUTEUR);
-        return optionalUtilisateurs.map(utilisateurs -> utilisateurs.stream().map(utilisateurMapper::toDto).collect(Collectors.toList())).orElse(null);
+        List<Utilisateur> optionalUtilisateurs = utilisateurRepository.findByTypeUtilisateur(TypeUtilisateur.CONTRIBUTEUR);
+        return Optional.of(optionalUtilisateurs).map(utilisateurs -> utilisateurs.stream().map(utilisateurMapper::toDto).collect(Collectors.toList())).orElse(null);
     }
 
     @Transactional(readOnly = true)
     public long countContributeur() {
         log.debug("Request to get all Utilisateurs");
-        return utilisateurRepository.findByTypeUtilisateur(TypeUtilisateur.CONTRIBUTEUR).get().stream().count();
-       // return utilisateurRepository.findByTypeUtilisateur(TypeUtilisateur.CONTRIBUTEUR).stream().count();
+        return utilisateurRepository.findByTypeUtilisateur(TypeUtilisateur.CONTRIBUTEUR).size();
     }
 }
