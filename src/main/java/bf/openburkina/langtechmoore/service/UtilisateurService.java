@@ -18,6 +18,7 @@ import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import bf.openburkina.langtechmoore.web.rest.errors.BadRequestAlertException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -71,7 +72,11 @@ public class UtilisateurService {
         User user = new User();
         String encryptedPassword;
         Utilisateur utilisateur = utilisateurMapper.toEntity(utilisateurDTO);
-        System.out.println("========================= "+utilisateurDTO.getProfil());
+
+        if (userRepository.findByLoginOrEmail(utilisateur.getEmail(), utilisateur.getEmail()).isPresent()) {
+            throw new BadRequestAlertException("Cet email est déjà utilisé par un autre compte !", "utilisateur", "idexists");
+        }
+
         Profil profil = profilRepository.findOneWithEagerRelationships(utilisateurDTO.getProfil().getId());
         user.setLogin(utilisateurDTO.getEmail());
         user.setEmail(utilisateurDTO.getEmail());
