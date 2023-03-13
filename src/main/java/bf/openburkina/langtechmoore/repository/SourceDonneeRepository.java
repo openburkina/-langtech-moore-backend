@@ -19,4 +19,7 @@ public interface SourceDonneeRepository extends JpaRepository<SourceDonnee, Long
     Page<SourceDonnee>findAllWithCriteria(@Param("libelle") String libelle, Pageable pageable);
 
     Optional<SourceDonnee> findByLibelle(String libelle);
+
+    @Query(value = "select count(*) from SourceDonnee",nativeQuery = true)
+    Integer countAllContribution();
 }

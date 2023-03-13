@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 import bf.openburkina.langtechmoore.service.dto.UtilisateurDTO;
 import bf.openburkina.langtechmoore.service.mapper.UserMapper;
 import bf.openburkina.langtechmoore.service.mapper.UtilisateurMapper;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.CacheManager;
@@ -29,6 +30,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tech.jhipster.security.RandomUtil;
+import com.twilio.Twilio;
+import com.twilio.rest.api.v2010.account.Message;
+import com.twilio.type.PhoneNumber;
 
 /**
  * Service class for managing users.
@@ -98,18 +102,33 @@ public class UserService {
             });
     }
 
-    public Optional<User> requestPasswordReset(String mail) {
+    public Optional<User> requestPasswordReset(String phone, String password) {
+        log.debug("REST Request to reset password : {}, {}", phone, password);
         return userRepository
-            .findOneByEmailIgnoreCase(mail)
+            .findOneByLogin(phone)
             .filter(User::isActivated)
             .map(user -> {
                 user.setResetKey(RandomUtil.generateResetKey());
                 user.setResetDate(Instant.now());
                 user.setDefaultPassord(true);
-                user.setPassword(passwordEncoder.encode("langtech"));
+                user.setPassword(passwordEncoder.encode(password));
                 this.clearUserCaches(user);
                 return user;
             });
+    }
+
+    public void sendSms(String telephone,String password){
+        log.debug("REST Request to send sms : {}, {}", telephone, password);
+        String messageBody = "Votre mot de passe est : " + password;
+        Twilio.init(Constants.TWILIO_API_KEY_SID, Constants.TWILIO_API_KEY_SECRET, Constants.TWILIO_ACCOUNT_ID);
+        Message message = Message
+            .creator(
+                new PhoneNumber(telephone),
+                new PhoneNumber(Constants.TWILIO_SENDER),
+                messageBody
+            )
+            .create();
+        log.debug("SMS sended successfully... : {}", message.getSid());
     }
 
     public UserDTO registerUser(UtilisateurDTO userDTO, String password) {
@@ -121,14 +140,21 @@ public class UserService {
                     throw new UsernameAlreadyUsedException();
                 }
             });
-        userRepository
-            .findOneByEmailIgnoreCase(userDTO.getEmail())
-            .ifPresent(existingUser -> {
-                boolean removed = removeNonActivatedUser(existingUser);
-                if (!removed) {
-                    throw new EmailAlreadyUsedException();
-                }
-            });
+
+        if (userDTO.getEmail().equals("")) {
+            userDTO.setEmail(null);
+        }
+        if (userDTO.getEmail() != null && !userDTO.getEmail().equals("")) {
+            userRepository
+                .findOneByEmailIgnoreCase(userDTO.getEmail())
+                .ifPresent(existingUser -> {
+                    boolean removed = removeNonActivatedUser(existingUser);
+                    if (!removed) {
+                        throw new EmailAlreadyUsedException();
+                    }
+                });
+        }
+
         User newUser = new User();
         Utilisateur utilisateur = utilisateurMapper.toEntity(userDTO);
         String encryptedPassword = passwordEncoder.encode(password);

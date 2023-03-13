@@ -1,5 +1,6 @@
 package bf.openburkina.langtechmoore.web.rest;
 
+import bf.openburkina.langtechmoore.config.Constants;
 import bf.openburkina.langtechmoore.repository.UtilisateurRepository;
 import bf.openburkina.langtechmoore.service.UtilisateurService;
 import bf.openburkina.langtechmoore.service.dto.UtilisateurDTO;
@@ -17,13 +18,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import tech.jhipster.web.util.HeaderUtil;
 import tech.jhipster.web.util.PaginationUtil;
 import tech.jhipster.web.util.ResponseUtil;
+import com.twilio.Twilio;
+import com.twilio.rest.api.v2010.account.Message;
+import com.twilio.type.PhoneNumber;
 
 /**
  * REST controller for managing {@link bf.openburkina.langtechmoore.domain.Utilisateur}.

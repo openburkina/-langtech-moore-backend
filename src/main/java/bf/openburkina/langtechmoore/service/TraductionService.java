@@ -9,10 +9,7 @@ import bf.openburkina.langtechmoore.domain.enumeration.TypeTraduction;
 import bf.openburkina.langtechmoore.repository.SourceDonneeRepository;
 import bf.openburkina.langtechmoore.repository.TraductionRepository;
 import bf.openburkina.langtechmoore.repository.UtilisateurRepository;
-import bf.openburkina.langtechmoore.service.dto.AllContributionDTO;
-import bf.openburkina.langtechmoore.service.dto.StatMoisDTO;
-import bf.openburkina.langtechmoore.service.dto.TraductionDTO;
-import bf.openburkina.langtechmoore.service.dto.XSourceDTO;
+import bf.openburkina.langtechmoore.service.dto.*;
 import bf.openburkina.langtechmoore.service.mapper.TraductionMapper;
 
 import java.io.*;
@@ -142,6 +139,21 @@ public class TraductionService {
             traductionDTO.getUtilisateur()!=null?traductionDTO.getUtilisateur().getId():null,
             traductionDTO.getLangue()!=null?traductionDTO.getLangue().getId():null
             ,pageable).map(traductionMapper::toDto);
+    }
+
+
+    @Transactional(readOnly = true)
+    public List<TraductionDTO> findAllpersoByCriteria(TraductionDTO traductionDTO) {
+        log.debug("Request to get all Traductions");
+        return traductionRepository.findAllPersoWithCriteria(
+            traductionDTO.getLibelle(),
+            traductionDTO.getEtat()!=null?traductionDTO.getEtat().name():null,
+            traductionDTO.getType()!=null?traductionDTO.getType().name():null,
+            traductionDTO.getContenuAudioContentType(),
+            traductionDTO.getSourceDonnee()!=null?traductionDTO.getSourceDonnee().getId():null,
+            traductionDTO.getUtilisateur()!=null?traductionDTO.getUtilisateur().getId():null,
+            traductionDTO.getLangue()!=null?traductionDTO.getLangue().getId():null
+            ).stream().map(traductionMapper::toDto).collect(Collectors.toList());
     }
 
     /**
@@ -346,18 +358,20 @@ public class TraductionService {
      */
     @Transactional()
     public Optional<TraductionDTO> validation(Long id, String etat,String motif) {
-        log.debug("Request to get Traduction : {}", id);
+        log.debug("Request to get Traduction : {}, {}, {}", id, etat, motif);
 
         Traduction t = traductionRepository.findById(id).get();
         Utilisateur u = t.getUtilisateur();
 
-        List<Traduction> tt = traductionRepository.findTraductionByEtatAndUtilisateurIdAndSourceDonneeIdAndType(Etat.VALIDER, u.getId(), t.getSourceDonnee().getId(), t.getType());
+        if (!Etat.valueOf(etat).equals(Etat.REJETER)) {
+            List<Traduction> tt = traductionRepository.findTraductionByEtatAndUtilisateurIdAndSourceDonneeIdAndType(Etat.VALIDER, u.getId(), t.getSourceDonnee().getId(), t.getType());
 
-        if (tt.isEmpty()){
-            u.setPointFidelite(u.getPointFidelite() + 1);
+            if (tt.isEmpty()){
+                u.setPointFidelite(u.getPointFidelite() + 1);
+            }
         }
-
         t.setEtat(Etat.valueOf(etat));
+        t.setMotif(motif);
         traductionRepository.save(t);
         utilisateurRepository.save(u);
 
@@ -367,6 +381,9 @@ public class TraductionService {
     public List<AllContributionDTO> getStatContribution(XSourceDTO xSourceDTO){
         List<AllContributionDTO> allContribution=new ArrayList<>();
         List<Utilisateur> contributeur= utilisateurRepository.findAll();
+        if(xSourceDTO.getContributeurId() !=null){
+            contributeur = contributeur.stream().filter(item-> Objects.equals(item.getId(), xSourceDTO.getContributeurId())).collect(Collectors.toList());
+        }
         ZonedDateTime dateFin=xSourceDTO.getFin().plusHours(23).plusMinutes(59).plusSeconds(59);
         contributeur.forEach(utilisateur -> {
             AllContributionDTO contribution=new AllContributionDTO();
@@ -415,10 +432,10 @@ public class TraductionService {
     }
 
     @Transactional(readOnly = true)
-    public List<Utilisateur> bestContributor(Instant debut, Instant fin) {
+    public BestContributorDTO bestContributor(Instant debut, Instant fin) {
         log.debug("Request to get all Traductions");
 
-        List<AbstractMap.SimpleEntry<Utilisateur, Integer>> a = new ArrayList<>();
+        BestContributorDTO bestContributorDTO = new BestContributorDTO();
 
         List<Utilisateur> utilisateurList = traductionRepository
             .findByCreatedDateIsBetweenAndEtat(debut,fin,Etat.VALIDER)
@@ -436,10 +453,11 @@ public class TraductionService {
 
             List<Long> idMaxCount = mapGroup.entrySet().stream().filter(e -> e.getValue() == maxCount).map(Map.Entry::getKey).collect(Collectors.toList());
 
-            return utilisateurList.stream().distinct().filter(u -> idMaxCount.contains(u.getId())).collect(Collectors.toList());
+            bestContributorDTO.setUtilisateurs(utilisateurList.stream().distinct().filter(u -> idMaxCount.contains(u.getId())).collect(Collectors.toList()));
 
+            bestContributorDTO.setPointFidelite(maxCount);
         }
 
-        return new ArrayList<>();
+        return bestContributorDTO;
     }
 }

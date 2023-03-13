@@ -169,6 +169,12 @@ public class TraductionResource {
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
 
+    @PostMapping("/traductions/count/criteria")
+    public List<TraductionDTO> getAllTraductionsPersoByCriteria(@RequestBody TraductionDTO traductionDTO) {
+        log.debug("REST request to get a page of Traductions");
+        return traductionService.findAllpersoByCriteria(traductionDTO);
+    }
+
     /**
      * {@code GET  /traductions/:id} : get the "id" traduction.
      *
@@ -260,8 +266,9 @@ public class TraductionResource {
     }
 
     @PostMapping("traductions/best-contributor")
-    public List<Utilisateur> getStatistique(@RequestBody DateDTO date) {
+    public BestContributorDTO getStatistique(@RequestBody DateDTO date) {
         System.err.println(date);
         return traductionService.bestContributor(date.getDebut(), date.getFin().plus(1, ChronoUnit.DAYS));
     }
+
 }

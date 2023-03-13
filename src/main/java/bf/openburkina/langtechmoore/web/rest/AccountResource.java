@@ -5,16 +5,19 @@ import bf.openburkina.langtechmoore.repository.UserRepository;
 import bf.openburkina.langtechmoore.security.SecurityUtils;
 import bf.openburkina.langtechmoore.service.MailService;
 import bf.openburkina.langtechmoore.service.UserService;
-import bf.openburkina.langtechmoore.service.dto.AdminUserDTO;
-import bf.openburkina.langtechmoore.service.dto.PasswordChangeDTO;
-import bf.openburkina.langtechmoore.service.dto.UserDTO;
-import bf.openburkina.langtechmoore.service.dto.UtilisateurDTO;
+import bf.openburkina.langtechmoore.service.dto.*;
 import bf.openburkina.langtechmoore.web.rest.errors.*;
 import bf.openburkina.langtechmoore.web.rest.vm.KeyAndPasswordVM;
 import bf.openburkina.langtechmoore.web.rest.vm.ManagedUserVM;
 import java.util.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+
+import com.twilio.Twilio;
+import com.twilio.rest.api.v2010.account.Message;
+import com.twilio.type.PhoneNumber;
+import liquibase.pro.packaged.M;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -144,20 +147,19 @@ public class AccountResource {
         userService.changePassword(passwordChangeDto.getCurrentPassword(), passwordChangeDto.getNewPassword());
     }
 
-    /**
-     * {@code POST   /account/reset-password/init} : Send an email to reset the password of the user.
-     *
-     * @param mail the mail of the user.
-     */
+
     @PostMapping(path = "/account/reset-password/init")
-    public void requestPasswordReset(@RequestBody String mail) {
-        Optional<User> user = userService.requestPasswordReset(mail);
+    public MResponse requestPasswordReset(@RequestBody String phone) {
+        String password = RandomStringUtils.randomNumeric(5);
+        Optional<User> user = userService.requestPasswordReset(phone, password);
         if (user.isPresent()) {
-            mailService.sendPasswordResetMail(user.get());
+            userService.sendSms(phone, password);
+            return new MResponse("0", "Mot de passe modifié avec succès !");
         } else {
             // Pretend the request has been successful to prevent checking which emails really exist
             // but log that an invalid attempt has been made
             log.warn("Password reset requested for non existing mail");
+            return new MResponse("-1", "Aucun compte n'est associé à ce numéro de téléphone !");
         }
     }
 

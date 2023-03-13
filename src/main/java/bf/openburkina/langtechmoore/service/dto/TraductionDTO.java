@@ -52,6 +52,16 @@ public class TraductionDTO extends AbstractAuditingEntity implements Serializabl
 
     private LangueDTO langue;
 
+    private Instant createdDate;
+
+    public Instant getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(Instant createdDate) {
+        this.createdDate = createdDate;
+    }
+
     private String mois;
 
     public String getMois() {
@@ -199,6 +209,8 @@ public class TraductionDTO extends AbstractAuditingEntity implements Serializabl
             ", note=" + note +
             ", cheminDocument='" + cheminDocument + '\'' +
             ", etat=" + etat +
+            ", motif=" + motif +
+            ", createdDate=" + createdDate +
             ", utilisateur=" + utilisateur +
             ", sourceDonnee=" + sourceDonnee +
             ", langue=" + langue +
