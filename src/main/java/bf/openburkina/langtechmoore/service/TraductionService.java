@@ -16,6 +16,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -23,11 +24,7 @@ import java.util.List;
 import java.util.Optional;
 import java.time.Instant;
 import java.util.*;
-import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.slf4j.Logger;
@@ -303,7 +300,7 @@ public class TraductionService {
         TraductionDTO traductionDTO=new TraductionDTO();
         log.debug("*---------------"+traductionId);
         String traductionFolder=null;
-        byte[] bytes;
+        byte[] bytes=null;
         if(traductionId!=null){
             Traduction traduction =traductionRepository.findByTraductionId(traductionId);
             traductionDTO=traductionMapper.toDto(traduction);
@@ -312,7 +309,7 @@ public class TraductionService {
                 File img = new File(traductionFolder);
                 log.debug("is file------"+img+"et bool"+img.isFile());
                 // bytes = FileUtils.readFileToByteArray(img);
-                   bytes = Files.readAllBytes(Path.of(img.getPath()));
+                 //  bytes = Files.readAllBytes(Path.of(img.getPath()));
                 traductionDTO.setContenuAudio(bytes);
             }
 
