@@ -73,7 +73,7 @@ public class UtilisateurService {
         String encryptedPassword;
         Utilisateur utilisateur = utilisateurMapper.toEntity(utilisateurDTO);
 
-        if (userRepository.findByLoginOrEmail(utilisateur.getEmail(), utilisateur.getEmail()).isPresent()) {
+        if (userRepository.findOneByLogin(utilisateur.getEmail()).isPresent()) {
             throw new BadRequestAlertException("Cet email est déjà utilisé par un autre compte !", "utilisateur", "idexists");
         }
 
